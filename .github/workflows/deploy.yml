@@ -72,6 +72,7 @@ jobs:
           source: "backend/docker-compose.yml"
           target: ${{ env.DEPLOY_PATH }}
           strip_components: 1
+          debug: true
 
       - name: Deploy to Droplet via SSH
         uses: appleboy/ssh-action@v1
@@ -79,6 +80,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          debug: true
           script: |
             cd ${{ env.DEPLOY_PATH }}
             
