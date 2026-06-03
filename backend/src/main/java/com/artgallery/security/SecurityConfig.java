@@ -61,6 +61,9 @@ public class SecurityConfig {
                 // WebSocket handshakes
                 .requestMatchers("/ws/**").permitAll()
                 
+                // Webhook callbacks
+                .requestMatchers("/api/wallet/momo-ipn").permitAll()
+                
                 // Any other request must be authenticated
                 .anyRequest().authenticated()
             );
