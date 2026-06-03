@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "comments", indexes = {
@@ -29,15 +30,28 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "illustration_id", nullable = false)
+    @JsonIgnore
     private Illustration illustration;
+
+    @JsonProperty("illustrationId")
+    public String getIllustrationIdString() {
+        return illustration != null ? illustration.getId().toString() : null;
+    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonProperty("userId")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_comment_id")
+    @JsonIgnore
     private Comment parentComment;
+
+    @JsonProperty("parentCommentId")
+    public String getParentCommentIdString() {
+        return parentComment != null ? parentComment.getId().toString() : null;
+    }
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;

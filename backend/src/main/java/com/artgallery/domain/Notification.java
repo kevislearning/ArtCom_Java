@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "notifications", indexes = {
@@ -29,10 +30,17 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_id", nullable = false)
+    @JsonIgnore
     private User recipient;
+
+    @JsonProperty("recipientId")
+    public String getRecipientIdString() {
+        return recipient != null ? recipient.getId().toString() : null;
+    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "actor_id")
+    @JsonProperty("actorId")
     private User actor;
 
     @Column(nullable = false, length = 50)

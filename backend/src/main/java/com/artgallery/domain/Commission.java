@@ -27,10 +27,12 @@ public class Commission {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", nullable = false)
+    @JsonProperty("clientId")
     private User client;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "artist_id", nullable = false)
+    @JsonProperty("artistId")
     private User artist;
 
     @Column(nullable = false)
@@ -53,6 +55,7 @@ public class Commission {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "result_illustration_id")
+    @JsonProperty("resultIllustrationId")
     private Illustration resultIllustration;
 
     @Column(name = "is_private")

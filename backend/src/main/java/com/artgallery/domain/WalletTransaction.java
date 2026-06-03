@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "wallet_transactions", indexes = {
@@ -29,7 +30,13 @@ public class WalletTransaction {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
+
+    @JsonProperty("userId")
+    public String getUserIdString() {
+        return user != null ? user.getId().toString() : null;
+    }
 
     @Column(nullable = false)
     private double amount;
@@ -39,6 +46,7 @@ public class WalletTransaction {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reference_id")
+    @JsonProperty("referenceId")
     private Commission reference;
 
     private String description;
