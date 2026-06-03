@@ -23,6 +23,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        List<String> origins = new ArrayList<>();
+        if (clientUrl != null && !clientUrl.trim().isEmpty()) {
+            for (String url : clientUrl.split(",")) {
+                origins.add(url.trim());
+            }
+        }
+        if (!origins.contains("http://localhost:5173")) {
+            origins.add("http://localhost:5173");
+        }
+
         registry.addEndpoint("/ws")
-                .setAllowedOrigins(clientUrl, "http://localhost:5173")
+                .setAllowedOrigins(origins.toArray(new String[0]))
                 .addInterceptors(new HandshakeInterceptor() {
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,

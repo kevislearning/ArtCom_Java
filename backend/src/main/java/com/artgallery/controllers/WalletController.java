@@ -151,7 +151,11 @@ public class WalletController {
         String orderId = "ARTPAY_" + authUser.getId() + "_" + System.currentTimeMillis();
         String requestId = orderId;
         String orderInfo = "Nap tien vi gia lap ArtGallery - user @" + authUser.getUsername();
-        String redirectUrl = clientUrl + "/wallet";
+        String baseClientUrl = clientUrl;
+        if (clientUrl != null && clientUrl.contains(",")) {
+            baseClientUrl = clientUrl.split(",")[0].trim();
+        }
+        String redirectUrl = baseClientUrl + "/wallet";
         String ipnUrl = "http://localhost:5000/api/wallet/momo-ipn"; // absolute path callback
         String extraData = "";
         String requestType = "captureWallet";
