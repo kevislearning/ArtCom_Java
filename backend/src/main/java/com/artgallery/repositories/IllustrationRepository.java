@@ -18,8 +18,8 @@ public interface IllustrationRepository extends JpaRepository<Illustration, UUID
     @Query("SELECT DISTINCT i FROM Illustration i LEFT JOIN i.tags t " +
            "WHERE (:visibility IS NULL OR i.visibility IN :visibility) " +
            "AND (:artistId IS NULL OR i.artist.id = :artistId) " +
-           "AND (:tag IS NULL OR LOWER(t) = LOWER(:tag)) " +
-           "AND (:search IS NULL OR LOWER(i.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(i.description) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(t) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND (:tag IS NULL OR LOWER(t) = LOWER(CAST(:tag AS string))) " +
+           "AND (:search IS NULL OR LOWER(i.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(i.description) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(t) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:startDate IS NULL OR i.createdAt >= :startDate)")
     List<Illustration> findFeedsWithFilters(
             @Param("visibility") List<String> visibility,
@@ -43,7 +43,7 @@ public interface IllustrationRepository extends JpaRepository<Illustration, UUID
     List<Object[]> getTrendingTags(Pageable pageable);
 
     // Autosuggest/Search tags matching query string
-    @Query("SELECT DISTINCT t as tagName, COUNT(i) as tagCount FROM Illustration i JOIN i.tags t WHERE LOWER(t) LIKE LOWER(CONCAT('%', :search, '%')) GROUP BY t ORDER BY COUNT(i) DESC")
+    @Query("SELECT DISTINCT t as tagName, COUNT(i) as tagCount FROM Illustration i JOIN i.tags t WHERE LOWER(t) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) GROUP BY t ORDER BY COUNT(i) DESC")
     List<Object[]> searchTags(@Param("search") String search, Pageable pageable);
 
     // Counts illustrations by artist
