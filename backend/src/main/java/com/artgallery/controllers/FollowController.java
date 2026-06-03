@@ -26,7 +26,7 @@ public class FollowController {
     @Autowired
     private NotificationService notificationService;
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/toggle")
     public ResponseEntity<?> toggleFollow(
             @AuthenticationPrincipal User authUser,
             @PathVariable("id") UUID targetUserId) {

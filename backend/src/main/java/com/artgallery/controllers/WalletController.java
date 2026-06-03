@@ -133,7 +133,7 @@ public class WalletController {
         return ResponseEntity.ok(Map.of("walletBalance", user.getWalletBalance()));
     }
 
-    @PostMapping("/momo-payment")
+    @PostMapping("/deposit/momo")
     public ResponseEntity<?> initiateMomoPayment(
             @AuthenticationPrincipal User authUser,
             @RequestBody Map<String, Object> body) {
@@ -216,7 +216,7 @@ public class WalletController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Server error initiating MoMo payment"));
     }
 
-    @PostMapping("/momo-confirm")
+    @PostMapping("/deposit/momo/mock-confirm")
     public ResponseEntity<?> mockConfirmMomoPayment(
             @AuthenticationPrincipal User authUser,
             @RequestBody Map<String, Object> body) {
@@ -249,7 +249,7 @@ public class WalletController {
         return ResponseEntity.ok(Map.of("walletBalance", result.user.getWalletBalance(), "transaction", result.transaction));
     }
 
-    @PostMapping("/bank-deposit")
+    @PostMapping("/deposit/bank/confirm")
     public ResponseEntity<?> confirmBankDeposit(
             @AuthenticationPrincipal User authUser,
             @RequestBody Map<String, Object> body) {

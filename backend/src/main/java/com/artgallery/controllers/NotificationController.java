@@ -27,7 +27,7 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    @PutMapping
+    @PutMapping("/mark-all")
     @Transactional
     public ResponseEntity<?> markAllAsRead(@AuthenticationPrincipal User authUser) {
         if (authUser == null) {
@@ -35,5 +35,30 @@ public class NotificationController {
         }
         notificationRepository.markAllAsRead(authUser.getId());
         return ResponseEntity.ok(Map.of("success", true, "message", "All notifications marked as read"));
+    }
+
+    @PutMapping("/{id}/read")
+    public ResponseEntity<?> markAsRead(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable("id") UUID id) {
+        
+        if (authUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));
+        }
+
+        Optional<Notification> notifOpt = notificationRepository.findById(id);
+        if (notifOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Notification not found"));
+        }
+
+        Notification notification = notifOpt.get();
+        if (!notification.getRecipient().getId().equals(authUser.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Access denied"));
+        }
+
+        notification.setRead(true);
+        notification = notificationRepository.save(notification);
+
+        return ResponseEntity.ok(notification);
     }
 }

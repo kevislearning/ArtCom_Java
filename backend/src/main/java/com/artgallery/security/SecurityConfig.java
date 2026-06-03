@@ -46,14 +46,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/health", "/error").permitAll()
                 
                 // Auth public routes
-                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/google", "/api/auth/recommended").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/google", "/api/auth/artists/recommended", "/api/auth/profile/**", "/api/auth/search").permitAll()
                 
                 // Illustrations public views
                 .requestMatchers(HttpMethod.GET, "/api/illustrations", "/api/illustrations/trending-tags", "/api/illustrations/tags/search").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/illustrations/{id}").permitAll()
                 
                 // Comments public views
-                .requestMatchers(HttpMethod.GET, "/api/comments").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/comments/illustration/**").permitAll()
                 
                 // Static file serving fallback
                 .requestMatchers("/uploads/**").permitAll()

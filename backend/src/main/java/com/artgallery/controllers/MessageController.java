@@ -111,7 +111,7 @@ public class MessageController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/conversations")
     public ResponseEntity<?> getConversations(@AuthenticationPrincipal User authUser) {
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));

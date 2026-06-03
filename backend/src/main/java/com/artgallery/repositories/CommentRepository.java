@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
     List<Comment> findByIllustrationIdOrderByCreatedAtAsc(UUID illustrationId);
     void deleteByIllustrationId(UUID illustrationId);
+    List<Comment> findByParentComment(Comment parentComment);
 }

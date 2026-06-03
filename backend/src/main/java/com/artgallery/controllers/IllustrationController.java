@@ -463,7 +463,7 @@ public class IllustrationController {
         return ResponseEntity.ok(Map.of("bookmarked", bookmarked, "bookmarksCount", ill.getBookmarksCount()));
     }
 
-    @GetMapping("/feed")
+    @GetMapping("/followed")
     public ResponseEntity<?> getFollowedFeed(@AuthenticationPrincipal User authUser) {
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));
@@ -500,7 +500,7 @@ public class IllustrationController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/bookmarks")
+    @GetMapping("/feed/bookmarks")
     public ResponseEntity<?> getBookmarkedIllustrations(@AuthenticationPrincipal User authUser) {
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));

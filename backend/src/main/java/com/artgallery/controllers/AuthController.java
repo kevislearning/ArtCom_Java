@@ -165,13 +165,13 @@ public class AuthController {
         return ResponseEntity.ok(authUser);
     }
 
-    @GetMapping("/recommended")
+    @GetMapping("/artists/recommended")
     public ResponseEntity<?> getRecommended() {
         List<User> artists = userRepository.findTop6ByIsArtistTrueOrderByTotalLikesDescTotalViewsDesc();
         return ResponseEntity.ok(artists);
     }
 
-    @PostMapping("/change-password")
+    @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal User authUser,
             @RequestBody Map<String, String> body) {
@@ -200,7 +200,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Đổi mật khẩu thành công!"));
     }
 
-    @PutMapping("/profile")
+    @PutMapping("/update")
     public ResponseEntity<?> updateProfile(
             @AuthenticationPrincipal User authUser,
             @RequestParam(value = "nickname", required = false) String nickname,
@@ -420,7 +420,7 @@ public class AuthController {
         return sendTokenResponse(user, HttpStatus.OK.value(), response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/profile/{id}")
     public ResponseEntity<?> getPublicProfile(
             @AuthenticationPrincipal User authUser,
             @PathVariable("id") UUID id) {
