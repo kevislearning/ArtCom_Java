@@ -17,10 +17,10 @@ public interface IllustrationRepository extends JpaRepository<Illustration, UUID
     // Dynamic query helper for feeds
     @Query("SELECT DISTINCT i FROM Illustration i LEFT JOIN i.tags t " +
            "WHERE (:visibility IS NULL OR i.visibility IN :visibility) " +
-           "AND (:artistId IS NULL OR i.artist.id = :artistId) " +
-           "AND (:tag IS NULL OR LOWER(t) = LOWER(CAST(:tag AS string))) " +
-           "AND (:search IS NULL OR LOWER(i.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(i.description) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(t) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
-           "AND (:startDate IS NULL OR i.createdAt >= :startDate)")
+           "AND (CAST(:artistId AS string) IS NULL OR i.artist.id = :artistId) " +
+           "AND (CAST(:tag AS string) IS NULL OR LOWER(t) = LOWER(CAST(:tag AS string))) " +
+           "AND (CAST(:search AS string) IS NULL OR LOWER(i.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(i.description) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(t) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
+           "AND (CAST(:startDate AS timestamp) IS NULL OR i.createdAt >= :startDate)")
     List<Illustration> findFeedsWithFilters(
             @Param("visibility") List<String> visibility,
             @Param("artistId") UUID artistId,
