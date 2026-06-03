@@ -45,74 +45,74 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Pools of Unsplash High-Quality URLs
+    // Pools of Lorem Picsum High-Quality URLs (using static IDs for reliability and speed)
     private static final String[] AVATAR_POOL = {
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1542206395-9feb3edaa68d?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=200&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=200&h=200&fit=crop"
+        "https://picsum.photos/id/10/200/200",
+        "https://picsum.photos/id/22/200/200",
+        "https://picsum.photos/id/26/200/200",
+        "https://picsum.photos/id/32/200/200",
+        "https://picsum.photos/id/40/200/200",
+        "https://picsum.photos/id/54/200/200",
+        "https://picsum.photos/id/64/200/200",
+        "https://picsum.photos/id/65/200/200",
+        "https://picsum.photos/id/84/200/200",
+        "https://picsum.photos/id/91/200/200",
+        "https://picsum.photos/id/103/200/200",
+        "https://picsum.photos/id/177/200/200",
+        "https://picsum.photos/id/204/200/200",
+        "https://picsum.photos/id/237/200/200",
+        "https://picsum.photos/id/324/200/200",
+        "https://picsum.photos/id/334/200/200",
+        "https://picsum.photos/id/338/200/200",
+        "https://picsum.photos/id/342/200/200",
+        "https://picsum.photos/id/349/200/200",
+        "https://picsum.photos/id/399/200/200"
     };
 
     private static final String[] BANNER_POOL = {
-        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1579783928621-7a13d66a62d1?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1200&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&h=400&fit=crop"
+        "https://picsum.photos/id/15/1200/400",
+        "https://picsum.photos/id/29/1200/400",
+        "https://picsum.photos/id/43/1200/400",
+        "https://picsum.photos/id/48/1200/400",
+        "https://picsum.photos/id/56/1200/400",
+        "https://picsum.photos/id/76/1200/400",
+        "https://picsum.photos/id/96/1200/400",
+        "https://picsum.photos/id/122/1200/400",
+        "https://picsum.photos/id/133/1200/400",
+        "https://picsum.photos/id/145/1200/400"
     };
 
     private static final String[] ARTWORK_POOL = {
-        "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=800",
-        "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800",
-        "https://images.unsplash.com/photo-1580136579312-94651dfd596d?q=80&w=800",
-        "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800",
-        "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800",
-        "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?q=80&w=800",
-        "https://images.unsplash.com/photo-1549887534-1541e9326642?q=80&w=800",
-        "https://images.unsplash.com/photo-1561214115-f2f134cc4912?q=80&w=800",
-        "https://images.unsplash.com/photo-1579783928621-7a13d66a62d1?q=80&w=800",
-        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800",
-        "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=800",
-        "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=800",
-        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800",
-        "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800",
-        "https://images.unsplash.com/photo-1547891654-e66ed7edd96c?q=80&w=800",
-        "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800",
-        "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?q=80&w=800",
-        "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=800",
-        "https://images.unsplash.com/photo-1501472312651-726afd116ff1?q=80&w=800",
-        "https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?q=80&w=800",
-        "https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800",
-        "https://images.unsplash.com/photo-1579783928586-78f9f8c65f9a?q=80&w=800",
-        "https://images.unsplash.com/photo-1582562124811-c09040d0a901?q=80&w=800",
-        "https://images.unsplash.com/photo-1582201942988-13e60e4556ee?q=80&w=800",
-        "https://images.unsplash.com/photo-1576016770956-debb63d90029?q=80&w=800",
-        "https://images.unsplash.com/photo-1594224056279-d101eb692631?q=80&w=800",
-        "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=800",
-        "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?q=80&w=800",
-        "https://images.unsplash.com/photo-1554188718-d8af7b9d4e82?q=80&w=800",
-        "https://images.unsplash.com/photo-1551913902-c92207136625?q=80&w=800"
+        "https://picsum.photos/id/151/800/800",
+        "https://picsum.photos/id/152/800/800",
+        "https://picsum.photos/id/153/800/800",
+        "https://picsum.photos/id/154/800/800",
+        "https://picsum.photos/id/155/800/800",
+        "https://picsum.photos/id/156/800/800",
+        "https://picsum.photos/id/157/800/800",
+        "https://picsum.photos/id/158/800/800",
+        "https://picsum.photos/id/159/800/800",
+        "https://picsum.photos/id/160/800/800",
+        "https://picsum.photos/id/161/800/800",
+        "https://picsum.photos/id/162/800/800",
+        "https://picsum.photos/id/163/800/800",
+        "https://picsum.photos/id/164/800/800",
+        "https://picsum.photos/id/165/800/800",
+        "https://picsum.photos/id/166/800/800",
+        "https://picsum.photos/id/167/800/800",
+        "https://picsum.photos/id/168/800/800",
+        "https://picsum.photos/id/169/800/800",
+        "https://picsum.photos/id/170/800/800",
+        "https://picsum.photos/id/171/800/800",
+        "https://picsum.photos/id/172/800/800",
+        "https://picsum.photos/id/173/800/800",
+        "https://picsum.photos/id/174/800/800",
+        "https://picsum.photos/id/175/800/800",
+        "https://picsum.photos/id/176/800/800",
+        "https://picsum.photos/id/178/800/800",
+        "https://picsum.photos/id/179/800/800",
+        "https://picsum.photos/id/180/800/800",
+        "https://picsum.photos/id/181/800/800"
     };
 
     private static final String[] ART_TITLES = {
@@ -189,8 +189,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(10000000.0)
                 .bio("Art Gallery Developer & Admin Account.")
-                .avatarUrl("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&h=200&fit=crop")
-                .bannerUrl("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&h=400&fit=crop")
+                .avatarUrl("https://picsum.photos/id/1025/200/200")
+                .bannerUrl("https://picsum.photos/id/1015/1200/400")
                 .build();
 
         User vincent = User.builder()
@@ -201,8 +201,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(3500000.0)
                 .bio("Post-Impressionist painter. I seek, I strive, I am in it with all my heart.")
-                .avatarUrl("https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=200&h=200&fit=crop")
-                .bannerUrl("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1200&h=400&fit=crop")
+                .avatarUrl("https://picsum.photos/id/1005/200/200")
+                .bannerUrl("https://picsum.photos/id/1016/1200/400")
                 .build();
 
         User monet = User.builder()
@@ -213,8 +213,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(0.0)
                 .bio("Founder of French Impressionist painting. The richness I achieve comes from Nature.")
-                .avatarUrl("https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop")
-                .bannerUrl("https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1200&h=400&fit=crop")
+                .avatarUrl("https://picsum.photos/id/1012/200/200")
+                .bannerUrl("https://picsum.photos/id/1018/1200/400")
                 .build();
 
         User mitsuki = User.builder()
@@ -225,8 +225,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(1200000.0)
                 .bio("Professional anime illustrator and manga artist. Open for fantasy and cute characters!")
-                .avatarUrl("https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&h=200&fit=crop")
-                .bannerUrl("https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&h=400&fit=crop")
+                .avatarUrl("https://picsum.photos/id/1027/200/200")
+                .bannerUrl("https://picsum.photos/id/1019/1200/400")
                 .build();
 
         User skylar = User.builder()
@@ -237,8 +237,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(2000000.0)
                 .bio("Digital landscape artist. Futuristic cityscapes, sci-fi concept arts, and cyberpunk streets.")
-                .avatarUrl("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&fit=crop")
-                .bannerUrl("https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=1200&h=400&fit=crop")
+                .avatarUrl("https://picsum.photos/id/1062/200/200")
+                .bannerUrl("https://picsum.photos/id/1022/1200/400")
                 .build();
 
         User alice = User.builder()
@@ -249,7 +249,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(false)
                 .walletBalance(5000000.0)
                 .bio("Art lover and collector. Interested in classic oil paintings.")
-                .avatarUrl("https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&h=200&fit=crop")
+                .avatarUrl("https://picsum.photos/id/64/200/200")
                 .build();
 
         User bob = User.builder()
@@ -260,7 +260,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(false)
                 .walletBalance(500000.0)
                 .bio("Just browsing some fine arts around the community.")
-                .avatarUrl("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&h=200&fit=crop")
+                .avatarUrl("https://picsum.photos/id/91/200/200")
                 .build();
 
         User emily = User.builder()
@@ -271,7 +271,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(false)
                 .walletBalance(1500000.0)
                 .bio("Graphic design student. Fan of digital arts and anime style.")
-                .avatarUrl("https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&h=200&fit=crop")
+                .avatarUrl("https://picsum.photos/id/338/200/200")
                 .build();
 
         List<User> staticUsers = Arrays.asList(admin, vincent, monet, mitsuki, skylar, alice, bob, emily);
@@ -354,7 +354,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(vincent)
                 .title("The Starry Night")
                 .description("Fascinating view of the night sky from my asylum window in Saint-Rémy-de-Provence.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1002/800/800"))
                 .tags(Arrays.asList("classic", "nature", "oilpainting", "starrysky"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -365,7 +365,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(vincent)
                 .title("Wheatfield with Crows")
                 .description("A dramatic wind-swept wheat field under a dark, stormy sky populated by flying crows.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1579783928621-7a13d66a62d1?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1011/800/800"))
                 .tags(Arrays.asList("classic", "nature", "oilpainting"))
                 .visibility("logged_in")
                 .commentsEnabled(true)
@@ -376,7 +376,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(vincent)
                 .title("My Private Studio Sketch")
                 .description("A raw, charcoal draft sketch of my temporary workspace.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1580136579312-94651dfd596d?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1024/800/800"))
                 .tags(Arrays.asList("classic", "sketch"))
                 .visibility("private")
                 .commentsEnabled(false)
@@ -387,7 +387,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(monet)
                 .title("Water Lilies")
                 .description("Impression of the lily pond in my garden at Giverny. Exploring light and reflection.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1025/800/800"))
                 .tags(Arrays.asList("classic", "nature", "impressionism"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -398,7 +398,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(monet)
                 .title("The Artist's Garden")
                 .description("Paths of colorful irises and climbing roses leading up to the house.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1035/800/800"))
                 .tags(Arrays.asList("nature", "impressionism"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -409,7 +409,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(mitsuki)
                 .title("Magical Forest Girl")
                 .description("A bright pastel illustration of an elf girl surrounded by glowing mushrooms.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1040/800/800"))
                 .tags(Arrays.asList("anime", "manga", "kawaii", "fantasy", "digitalart"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -420,7 +420,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(mitsuki)
                 .title("Sky Above the Clouds")
                 .description("Anime landscape scenery under golden hour sunlight. Inspired by Shinkai's films.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1044/800/800"))
                 .tags(Arrays.asList("anime", "fantasy", "digitalart"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -431,7 +431,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(mitsuki)
                 .title("Cyberpunk Cafe")
                 .description("Neon-lit cafe shop featuring a cute barista. Exclusively for logged in users.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1050/800/800"))
                 .tags(Arrays.asList("anime", "kawaii", "cyberpunk", "digitalart"))
                 .visibility("logged_in")
                 .commentsEnabled(true)
@@ -442,7 +442,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(skylar)
                 .title("Neon Metropolis")
                 .description("A vast, futuristic city skyline at midnight under pouring acid rain.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1060/800/800"))
                 .tags(Arrays.asList("scifi", "cyberpunk", "digital", "landscape"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -453,7 +453,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(skylar)
                 .title("Abyss Expedition")
                 .description("Concept art featuring space explorers discovering ancient relics in a deep canyon.")
-                .imageUrls(Collections.singletonList("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800"))
+                .imageUrls(Collections.singletonList("https://picsum.photos/id/1062/800/800"))
                 .tags(Arrays.asList("scifi", "digital", "conceptart"))
                 .visibility("everyone")
                 .commentsEnabled(true)

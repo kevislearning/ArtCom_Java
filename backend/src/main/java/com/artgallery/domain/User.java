@@ -190,6 +190,7 @@ public class User {
     @Builder
     public static class Website {
         private String value;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 
@@ -200,6 +201,7 @@ public class User {
     @Builder
     public static class Gender {
         private String value;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 
@@ -210,6 +212,7 @@ public class User {
     @Builder
     public static class Country {
         private String value;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 
@@ -220,6 +223,7 @@ public class User {
     @Builder
     public static class Birthday {
         private Date value;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 
@@ -230,6 +234,7 @@ public class User {
     @Builder
     public static class Occupation {
         private String value;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 
@@ -241,6 +246,7 @@ public class User {
     public static class CustomSocialLink {
         private String platform;
         private String username;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 }

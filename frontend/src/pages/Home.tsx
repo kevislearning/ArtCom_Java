@@ -54,7 +54,7 @@ export const Home = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundImage: `url(${(import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000'}${trendingRecommendation.imageUrls[0]})`,
+              backgroundImage: `url(${trendingRecommendation.imageUrls[0]?.startsWith('http') ? trendingRecommendation.imageUrls[0] : `${(import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000'}${trendingRecommendation.imageUrls[0]}`})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               filter: 'brightness(0.55)',
