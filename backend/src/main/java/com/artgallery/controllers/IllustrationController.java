@@ -103,7 +103,9 @@ public class IllustrationController {
             @RequestParam(value = "tag", required = false) String tag,
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "artistId", required = false) String artistIdStr,
-            @RequestParam(value = "period", required = false) String period) {
+            @RequestParam(value = "period", required = false) String period,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
 
         List<String> visibilities = new ArrayList<>();
         visibilities.add("everyone");
@@ -176,6 +178,16 @@ public class IllustrationController {
         List<Map<String, Object>> mapped = illustrations.stream()
                 .map(i -> mapToResponse(i, authUser))
                 .collect(Collectors.toList());
+
+        if (page != null && limit != null && limit > 0) {
+            int start = (page - 1) * limit;
+            if (start >= mapped.size()) {
+                mapped = Collections.emptyList();
+            } else {
+                int end = Math.min(start + limit, mapped.size());
+                mapped = mapped.subList(start, end);
+            }
+        }
 
         return ResponseEntity.ok(mapped);
     }
@@ -355,6 +367,9 @@ public class IllustrationController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You are not authorized to delete this work"));
         }
 
+        // Keep a copy of image URLs to delete from storage
+        List<String> imageUrlsToDelete = new ArrayList<>(ill.getImageUrls());
+
         illustrationRepository.delete(ill);
 
         // Delete associated Likes and Bookmarks
@@ -363,6 +378,17 @@ public class IllustrationController {
 
         // Update stats
         statsService.updateArtistStats(authUser.getId());
+
+        // Delete files from storage
+        if (imageUrlsToDelete != null) {
+            for (String url : imageUrlsToDelete) {
+                try {
+                    cloudinaryService.deleteFile(url);
+                } catch (Exception e) {
+                    System.err.println("Failed to delete image file: " + url + " - " + e.getMessage());
+                }
+            }
+        }
 
         return ResponseEntity.ok(Map.of("message", "Illustration deleted successfully"));
     }

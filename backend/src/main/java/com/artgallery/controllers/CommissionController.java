@@ -43,24 +43,23 @@ public class CommissionController {
     @PostMapping
     public ResponseEntity<?> createCommission(
             @AuthenticationPrincipal User authUser,
-            @RequestBody Map<String, Object> body) {
+            @RequestParam("artistId") String artistIdStr,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("price") double price,
+            @RequestParam("deadline") String deadlineStr,
+            @RequestParam(value = "isPrivate", required = false) String isPrivateStr,
+            @RequestParam(value = "referenceImages", required = false) List<MultipartFile> referenceImages) throws IOException {
         
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));
         }
 
-        String artistIdStr = (String) body.get("artistId");
-        String title = (String) body.get("title");
-        String description = (String) body.get("description");
-        Number priceNum = (Number) body.get("price");
-        String deadlineStr = (String) body.get("deadline");
-        Boolean isPrivateVal = (Boolean) body.get("isPrivate");
-        boolean isPrivate = isPrivateVal != null ? isPrivateVal : false;
-
-        if (artistIdStr == null || title == null || description == null || priceNum == null || deadlineStr == null) {
+        if (artistIdStr == null || title == null || description == null || deadlineStr == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "All commission fields are required"));
         }
 
+        boolean isPrivate = "true".equalsIgnoreCase(isPrivateStr);
         UUID artistId = UUID.fromString(artistIdStr);
         UUID clientId = authUser.getId();
 
@@ -78,12 +77,27 @@ public class CommissionController {
             return ResponseEntity.badRequest().body(Map.of("message", "Selected user is not open for commission"));
         }
 
-        double price = priceNum.doubleValue();
-
         // Check client balance reload from DB
         User client = userRepository.findById(clientId).orElseThrow();
         if (client.getWalletBalance() < price) {
             return ResponseEntity.badRequest().body(Map.of("message", "Insufficient wallet balance"));
+        }
+
+        // Upload reference images to Cloudinary if any
+        List<String> refImageUrls = new ArrayList<>();
+        if (referenceImages != null && !referenceImages.isEmpty()) {
+            refImageUrls = cloudinaryService.uploadMultipleFiles(referenceImages);
+        }
+
+        Date deadlineDate;
+        try {
+            if (deadlineStr.contains("T")) {
+                deadlineDate = Date.from(java.time.Instant.parse(deadlineStr));
+            } else {
+                deadlineDate = Date.from(java.time.LocalDate.parse(deadlineStr).atStartOfDay(java.time.ZoneId.of("UTC")).toInstant());
+            }
+        } catch (Exception e) {
+            deadlineDate = new Date();
         }
 
         // Create commission
@@ -93,8 +107,9 @@ public class CommissionController {
                 .title(title)
                 .description(description)
                 .price(price)
-                .deadline(Date.from(java.time.Instant.parse(deadlineStr)))
+                .deadline(deadlineDate)
                 .isPrivate(isPrivate)
+                .referenceImageUrls(refImageUrls)
                 .status("pending")
                 .paymentStatus("unpaid")
                 .build();

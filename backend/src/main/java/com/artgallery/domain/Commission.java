@@ -3,9 +3,12 @@ package com.artgallery.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "commissions")
@@ -60,6 +63,12 @@ public class Commission {
 
     @Column(name = "is_private")
     private boolean isPrivate;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "commission_reference_images", joinColumns = @JoinColumn(name = "commission_id"))
+    @Column(name = "image_url")
+    @Builder.Default
+    private List<String> referenceImageUrls = new ArrayList<>();
 
     @Column(name = "created_at")
     private Date createdAt;

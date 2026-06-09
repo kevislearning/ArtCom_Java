@@ -67,6 +67,26 @@ export const Portfolio = () => {
   const [commDeadline, setCommDeadline] = useState('');
   const [commPrivate, setCommPrivate] = useState(false);
   const [commError, setCommError] = useState('');
+  const [refFiles, setRefFiles] = useState<File[]>([]);
+  const [refImagePreviews, setRefImagePreviews] = useState<string[]>([]);
+
+  const handleRefImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const totalFiles = [...refFiles, ...filesArray].slice(0, 5);
+      setRefFiles(totalFiles);
+      
+      const previewsArray = totalFiles.map(file => URL.createObjectURL(file));
+      setRefImagePreviews(previewsArray);
+    }
+  };
+
+  const handleRemoveRefImage = (index: number) => {
+    const updatedFiles = refFiles.filter((_, idx) => idx !== index);
+    setRefFiles(updatedFiles);
+    const updatedPreviews = refImagePreviews.filter((_, idx) => idx !== index);
+    setRefImagePreviews(updatedPreviews);
+  };
 
   // Trạng thái Modal chỉnh sửa hồ sơ (Edit Profile)
   const [showEditModal, setShowEditModal] = useState(false);
@@ -241,14 +261,19 @@ export const Portfolio = () => {
     }
 
     try {
-      await createCommission({
-        artistId: id!,
-        title: commTitle.trim(),
-        description: commDesc.trim(),
-        price: commPrice,
-        deadline: commDeadline,
-        isPrivate: commPrivate,
-      }).unwrap();
+      const formData = new FormData();
+      formData.append('artistId', id!);
+      formData.append('title', commTitle.trim());
+      formData.append('description', commDesc.trim());
+      formData.append('price', commPrice.toString());
+      formData.append('deadline', commDeadline);
+      formData.append('isPrivate', commPrivate.toString());
+      
+      refFiles.forEach((file) => {
+        formData.append('referenceImages', file);
+      });
+
+      await createCommission(formData).unwrap();
       
       setShowCommissionModal(false);
       // Thiết lập lại (Reset)
@@ -257,6 +282,8 @@ export const Portfolio = () => {
       setCommPrice(100000);
       setCommDeadline('');
       setCommPrivate(false);
+      setRefFiles([]);
+      setRefImagePreviews([]);
       alert('Đã gửi yêu cầu vẽ tranh và tạm giữ tiền thành công!');
       navigate('/commissions');
     } catch (err: any) {
@@ -284,9 +311,6 @@ export const Portfolio = () => {
     if (activeTab === 'works') {
       return true;
     }
-    // Để đơn giản, các tab likes/bookmarks có thể hiển thị nếu được phi chuẩn hóa hoặc nạp dữ liệu,
-    // chúng ta chỉ hiển thị các tác phẩm đã tạo của nghệ sĩ trong lưới này để học thuật đơn giản,
-    // hoặc chúng ta hiển thị một thông báo nếu tab trống.
     return false;
   });
 
@@ -715,7 +739,7 @@ export const Portfolio = () => {
                 />
               </div>
 
-              {/* Mô tả (Ngắn gọn) */}
+              {/* Mô tả (Brief) */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '13px', fontWeight: 700 }}>{t.requestDesc} *</label>
                 <textarea
@@ -753,6 +777,54 @@ export const Portfolio = () => {
                   onChange={(e) => setCommDeadline(e.target.value)}
                   required
                 />
+              </div>
+
+              {/* Ảnh mẫu/tham khảo (Reference Images) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 700 }}>
+                  {language === 'vn' ? 'Ảnh mẫu/tham khảo (Tối đa 5 ảnh)' : 'Reference Images (Max 5)'}
+                </label>
+                <input
+                  type="file"
+                  className="glass-input"
+                  multiple
+                  accept="image/*"
+                  onChange={handleRefImagesChange}
+                  style={{ padding: '8px' }}
+                />
+                {refImagePreviews.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
+                    {refImagePreviews.map((url, index) => (
+                      <div key={index} style={{ position: 'relative', width: '60px', height: '60px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
+                        <img src={url} alt="Ref Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveRefImage(index)}
+                          style={{
+                            position: 'absolute',
+                            top: '2px',
+                            right: '2px',
+                            backgroundColor: 'rgba(239, 68, 68, 0.85)',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '18px',
+                            height: '18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '9px',
+                            padding: 0,
+                            lineHeight: 1,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Hộp kiểm đặt ở chế độ riêng tư (Private) */}
@@ -832,7 +904,7 @@ export const Portfolio = () => {
               flexDirection: 'column'
             }}
           >
-            {/* 1. Phân khúc Header ảnh bìa */}
+            {/* 1. Header ảnh bìa */}
             <div
               style={{
                 height: '180px',
@@ -937,7 +1009,7 @@ export const Portfolio = () => {
                 {profileUser.requestTerms.details}
               </div>
 
-              {/* Banner hiển thị mức giá mục tiêu (Target price) */}
+              {/* Banner hiển thị mức giá mục tiêu */}
               <div
                 style={{
                   backgroundColor: 'rgba(20, 184, 166, 0.05)',
@@ -959,7 +1031,7 @@ export const Portfolio = () => {
               </div>
             </div>
 
-            {/* 3. Phân khúc chân trang hành động (Action Footer) */}
+            {/* 3. Phân khúc chân trang hành động */}
             <div
               style={{
                 padding: '20px 32px',
@@ -1195,7 +1267,7 @@ export const Portfolio = () => {
                 </div>
               </div>
 
-              {/* 3. Website & Sự riêng tư (Privacy) */}
+              {/* 3. Website & Sự riêng tư */}
               <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <h4 style={{ fontSize: '14px', fontWeight: 800 }}>Website cá nhân</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '16px', alignItems: 'center' }}>

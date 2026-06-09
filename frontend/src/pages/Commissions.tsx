@@ -361,7 +361,7 @@ export const Commissions = () => {
         )}
       </div>
 
-      {/* Danh sách các Commission chính */}
+      {/* Lưới hiển thị các Commission chính */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {commTab === 'received' && !user?.requestTerms?.hasTerms ? (
           <div
@@ -445,7 +445,7 @@ export const Commissions = () => {
                 onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
                 onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
               >
-                {/* 1. Header: Chi tiết đối tác và nhãn trạng thái (Status tags) */}
+                {/* 1. Header: Chi tiết đối tác và nhãn trạng thái */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img
@@ -472,7 +472,7 @@ export const Commissions = () => {
                   </div>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {/* Nhãn trạng thái (Status Pill) */}
+                    {/* Nhãn trạng thái */}
                     <span
                       style={{
                         backgroundColor: 'rgba(255,255,255,0.02)',
@@ -504,7 +504,7 @@ export const Commissions = () => {
                   </div>
                 </div>
 
-                {/* 2. Body Details: Tiêu đề, giá cả, hạn chót và mô tả ngắn */}
+                {/* 2. Body Details: Tiêu đề, giá cả, hạn chót và mô tả */}
                 <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '24px' }} className="commission-body-grid">
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <h3 style={{ fontSize: '18px', fontWeight: 800 }}>{comm.title}</h3>
@@ -515,6 +515,41 @@ export const Commissions = () => {
                         <AlertCircle size={14} />
                         Khách hàng yêu cầu giữ kín tranh vẽ
                       </span>
+                    )}
+
+                    {comm.referenceImageUrls && comm.referenceImageUrls.length > 0 && (
+                      <div style={{ marginTop: '12px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                          {language === 'vn' ? 'Ảnh mẫu/tham khảo:' : 'Reference Images:'}
+                        </span>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {comm.referenceImageUrls.map((url: string, index: number) => (
+                            <a
+                              key={index}
+                              href={getImageUrl(url)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                width: '64px',
+                                height: '64px',
+                                borderRadius: '6px',
+                                overflow: 'hidden',
+                                border: '1px solid var(--glass-border)',
+                                display: 'block',
+                                transition: 'transform 0.2s',
+                              }}
+                              onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                              onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                            >
+                              <img
+                                src={getImageUrl(url)}
+                                alt={`Reference ${index + 1}`}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
 
@@ -550,7 +585,7 @@ export const Commissions = () => {
                   </div>
                 </div>
 
-                {/* 3. Footer: Các hành động quy trình (Workflow actions) */}
+                {/* 3. Footer: Các hành động quy trình */}
                 <div
                   style={{
                     display: 'flex',
@@ -732,7 +767,7 @@ export const Commissions = () => {
                 </p>
               </div>
 
-              {/* Xem trước (Previews) */}
+              {/* Xem trước */}
               {deliveryPreviews.length > 0 && (
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   {deliveryPreviews.map((url, idx) => (
@@ -849,7 +884,7 @@ export const Commissions = () => {
                 </div>
               )}
 
-              {/* Tải lên ảnh bìa (Phong cách hình nền Pixiv) */}
+              {/* Tải lên ảnh bìa */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{ fontSize: '13px', fontWeight: 700 }}>Ảnh bìa Điều khoản (Cover Background) *</label>
                 <div
@@ -969,7 +1004,7 @@ export const Commissions = () => {
                   marginTop: '12px',
                 }}
               >
-                {/* Nút xóa (chỉ khi đã có điều khoản sẵn) */}
+                {/* Nút xóa */}
                 {user?.requestTerms?.hasTerms ? (
                   <button
                     type="button"

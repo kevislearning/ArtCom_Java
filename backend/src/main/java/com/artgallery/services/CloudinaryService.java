@@ -21,6 +21,9 @@ public class CloudinaryService {
     @Value("${client.url}")
     private String clientUrl;
 
+    @Value("${cloudinary.folder:artGallery_java}")
+    private String folderName;
+
     public CloudinaryService(
             @Value("${cloudinary.cloud-name}") String cloudName,
             @Value("${cloudinary.api-key}") String apiKey,
@@ -50,7 +53,8 @@ public class CloudinaryService {
         // If Cloudinary is available, upload to cloud
         if (this.cloudinary != null) {
             try {
-                Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+                Map<?, ?> options = ObjectUtils.asMap("folder", folderName);
+                Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), options);
                 return uploadResult.get("secure_url").toString();
             } catch (Exception e) {
                 System.err.println("[CloudinaryService] Cloud upload failed, trying local fallback: " + e.getMessage());
@@ -72,6 +76,64 @@ public class CloudinaryService {
             }
         }
         return urls;
+    }
+
+    public void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isEmpty()) {
+            return;
+        }
+
+        if (this.cloudinary != null && fileUrl.contains("cloudinary.com")) {
+            try {
+                String publicId = extractPublicId(fileUrl);
+                if (publicId != null && !publicId.isEmpty()) {
+                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                    System.out.println("[CloudinaryService] Deleted cloud file with publicId: " + publicId);
+                }
+            } catch (Exception e) {
+                System.err.println("[CloudinaryService] Failed to delete file from Cloudinary: " + e.getMessage());
+            }
+        } else {
+            // Delete local fallback file
+            try {
+                if (fileUrl.contains("/uploads/")) {
+                    String filename = fileUrl.substring(fileUrl.indexOf("/uploads/") + "/uploads/".length());
+                    Path filePath = Paths.get(localUploadPath).resolve(filename);
+                    if (Files.exists(filePath)) {
+                        Files.delete(filePath);
+                        System.out.println("[CloudinaryService] Deleted local file: " + filePath.toAbsolutePath());
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("[CloudinaryService] Failed to delete local file: " + e.getMessage());
+            }
+        }
+    }
+
+    private String extractPublicId(String url) {
+        int index = url.indexOf("/image/upload/");
+        if (index == -1) return null;
+
+        String path = url.substring(index + "/image/upload/".length());
+
+        // Remove version component if present (e.g. "v12345678/")
+        if (path.startsWith("v")) {
+            int firstSlash = path.indexOf('/');
+            if (firstSlash != -1) {
+                String potentialVersion = path.substring(1, firstSlash);
+                if (potentialVersion.matches("\\d+")) {
+                    path = path.substring(firstSlash + 1);
+                }
+            }
+        }
+
+        // Remove file extension
+        int dotIndex = path.lastIndexOf('.');
+        if (dotIndex != -1) {
+            path = path.substring(0, dotIndex);
+        }
+
+        return path;
     }
 
     private String uploadFileLocally(MultipartFile file) throws IOException {
