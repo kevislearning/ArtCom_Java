@@ -1,5 +1,5 @@
 export const getBackendUrl = () => {
-  return (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
+  return (import.meta.env.VITE_API_URL as string)?.replace(/\/api\/?$/, '') || 'http://localhost:5000';
 };
 
 export const getImageUrl = (path?: string) => {

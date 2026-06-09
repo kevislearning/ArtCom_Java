@@ -895,7 +895,7 @@ export const Commissions = () => {
                     backgroundColor: 'var(--bg-tertiary)',
                     position: 'relative',
                     backgroundImage: termsBgPreview
-                      ? `url(${termsBgPreview.startsWith('blob') || termsBgPreview.startsWith('http') ? termsBgPreview : `${((import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000')}${termsBgPreview}`})`
+                      ? `url(${termsBgPreview.startsWith('blob') || termsBgPreview.startsWith('http') ? termsBgPreview : `${((import.meta.env.VITE_API_URL as string)?.replace(/\/api\/?$/, '') || 'http://localhost:5000')}${termsBgPreview}`})`
                       : 'none',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',

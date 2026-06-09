@@ -191,7 +191,7 @@ export const ArtworkDetails = () => {
   const artist = typeof artwork.artistId === 'object' ? artwork.artistId : null;
   const isOwner = user && artist && artist._id === user._id;
 
-  const API_BASE_URL = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
+  const API_BASE_URL = (import.meta.env.VITE_API_URL as string)?.replace(/\/api\/?$/, '') || 'http://localhost:5000';
 
   const nextSlide = () => {
     if (artwork.imageUrls.length > 1) {

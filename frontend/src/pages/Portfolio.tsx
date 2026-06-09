@@ -305,7 +305,7 @@ export const Portfolio = () => {
   }
 
   const isMe = user && user._id === profileUser._id;
-  const API_BASE_URL = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
+  const API_BASE_URL = (import.meta.env.VITE_API_URL as string)?.replace(/\/api\/?$/, '') || 'http://localhost:5000';
 
   const displayedWorks = artworks.filter(() => {
     if (activeTab === 'works') {

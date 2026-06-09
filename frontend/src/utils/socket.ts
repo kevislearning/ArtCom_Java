@@ -2,7 +2,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000/api';
-const WEBSOCKET_URL = API_BASE_URL.replace('/api', '/ws');
+const WEBSOCKET_URL = API_BASE_URL.replace(/\/api\/?$/, '') + '/ws';
 
 class StompSocketWrapper {
   private listeners: Map<string, Array<(...args: any[]) => void>> = new Map();

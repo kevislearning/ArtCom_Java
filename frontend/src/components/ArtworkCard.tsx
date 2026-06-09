@@ -48,10 +48,7 @@ export const ArtworkCard = ({ artwork, rank }: ArtworkCardProps) => {
   };
 
   const artist = typeof artwork.artistId === 'object' ? artwork.artistId : null;
-  const API_BASE_URL = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
-  const imageUrl = artwork.imageUrls[0]?.startsWith('http')
-    ? artwork.imageUrls[0]
-    : `${API_BASE_URL}${artwork.imageUrls[0]}`;
+  const imageUrl = getImageUrl(artwork.imageUrls[0]);
 
   return (
     <div
