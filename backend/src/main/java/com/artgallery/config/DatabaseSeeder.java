@@ -2,11 +2,17 @@ package com.artgallery.config;
 
 import com.artgallery.domain.*;
 import com.artgallery.repositories.*;
+import com.artgallery.services.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 @Component
@@ -44,6 +50,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     // Pools of Lorem Picsum High-Quality URLs (using static IDs for reliability and speed)
     private static final String[] AVATAR_POOL = {
@@ -83,6 +92,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     };
 
     private static final String[] ARTWORK_POOL = {
+        // Picsum High Quality Images
         "https://picsum.photos/id/151/800/800",
         "https://picsum.photos/id/152/800/800",
         "https://picsum.photos/id/153/800/800",
@@ -98,21 +108,23 @@ public class DatabaseSeeder implements CommandLineRunner {
         "https://picsum.photos/id/163/800/800",
         "https://picsum.photos/id/164/800/800",
         "https://picsum.photos/id/165/800/800",
-        "https://picsum.photos/id/166/800/800",
-        "https://picsum.photos/id/167/800/800",
-        "https://picsum.photos/id/168/800/800",
-        "https://picsum.photos/id/169/800/800",
-        "https://picsum.photos/id/170/800/800",
-        "https://picsum.photos/id/171/800/800",
-        "https://picsum.photos/id/172/800/800",
-        "https://picsum.photos/id/173/800/800",
-        "https://picsum.photos/id/174/800/800",
-        "https://picsum.photos/id/175/800/800",
-        "https://picsum.photos/id/176/800/800",
-        "https://picsum.photos/id/178/800/800",
-        "https://picsum.photos/id/179/800/800",
-        "https://picsum.photos/id/180/800/800",
-        "https://picsum.photos/id/181/800/800"
+        // Classic Masterpieces (Wikimedia Commons)
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/800px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/500px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Claude_Monet_-_Water_Lilies_-_Google_Art_Project.jpg/800px-Claude_Monet_-_Water_Lilies_-_Google_Art_Project.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Great_Wave_off_Kanagawa2.jpg/800px-Great_Wave_off_Kanagawa2.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/500px-1665_Girl_with_a_Pearl_Earring.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Rembrandt_van_Rijn_-_Self-Portrait_-_Google_Art_Project.jpg/500px-Rembrandt_van_Rijn_-_Self-Portrait_-_Google_Art_Project.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/500px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73.5_cm%2C_National_Gallery%2C_Oslo%2C_Norway.jpg/500px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73.5_cm%2C_National_Gallery%2C_Oslo%2C_Norway.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Art_Project.jpg/600px-The_Kiss_-_Gustav_Klimt_-_Google_Art_Project.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg/500px-Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Vincent_van_Gogh_-_Cafe_Terrace_at_Night_%28F433%29_-_Google_Art_Project.jpg/500px-Vincent_van_Gogh_-_Cafe_Terrace_at_Night_%28F433%29_-_Google_Art_Project.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Irises-Vincent_van_Gogh.jpg/800px-Irises-Vincent_van_Gogh.jpg",
+        // Digital Art / Concept Art (Artstation-style CDNA)
+        "https://cdna.artstation.com/p/assets/images/images/017/233/178/large/concept-art-environment.jpg",
+        "https://cdna.artstation.com/p/assets/images/images/000/093/172/large/scifi-city-concept.jpg",
+        "https://cdna.artstation.com/p/assets/images/images/009/881/364/large/cyberpunk-street-alley.jpg"
     };
 
     private static final String[] ART_TITLES = {
@@ -168,6 +180,11 @@ public class DatabaseSeeder implements CommandLineRunner {
         "Giá đó hợp lý quá, mình sẽ đặt cọc ngay trên web nhé. Cảm ơn họa sĩ!"
     };
 
+    // Cached pools of uploaded Cloudinary image URLs
+    private List<String> uploadedAvatars = new ArrayList<>();
+    private List<String> uploadedBanners = new ArrayList<>();
+    private List<String> uploadedArtworks = new ArrayList<>();
+
     @Override
     public void run(String... args) throws Exception {
         if (userRepository.count() > 0) {
@@ -176,6 +193,33 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
 
         System.out.println("[DatabaseSeeder] Seeding database with expanded dynamic dataset...");
+
+        // --- 0. DOWNLOAD AND UPLOAD SEED IMAGES TO CLOUDINARY ---
+        System.out.println("[DatabaseSeeder] Downloading and uploading seed images to Cloudinary (artGallery_java)...");
+
+        // Upload first 10 Avatars
+        for (int i = 0; i < Math.min(10, AVATAR_POOL.length); i++) {
+            String url = AVATAR_POOL[i];
+            String uploadedUrl = uploadFromUrl(url, "avatar_" + i + ".jpg");
+            uploadedAvatars.add(uploadedUrl);
+        }
+
+        // Upload first 5 Banners
+        for (int i = 0; i < Math.min(5, BANNER_POOL.length); i++) {
+            String url = BANNER_POOL[i];
+            String uploadedUrl = uploadFromUrl(url, "banner_" + i + ".jpg");
+            uploadedBanners.add(uploadedUrl);
+        }
+
+        // Upload first 30 Artworks
+        for (int i = 0; i < Math.min(30, ARTWORK_POOL.length); i++) {
+            String url = ARTWORK_POOL[i];
+            String uploadedUrl = uploadFromUrl(url, "artwork_" + i + ".jpg");
+            uploadedArtworks.add(uploadedUrl);
+        }
+
+        System.out.println("[DatabaseSeeder] Pre-upload finished. Avatars: " + uploadedAvatars.size() + 
+            ", Banners: " + uploadedBanners.size() + ", Artworks: " + uploadedArtworks.size());
 
         Random random = new Random();
         String defaultPasswordHash = passwordEncoder.encode("password123");
@@ -189,8 +233,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(10000000.0)
                 .bio("Art Gallery Developer & Admin Account.")
-                .avatarUrl("https://picsum.photos/id/1025/200/200")
-                .bannerUrl("https://picsum.photos/id/1015/1200/400")
+                .avatarUrl(getAvatarUrl(0))
+                .bannerUrl(getBannerUrl(0))
                 .build();
 
         User vincent = User.builder()
@@ -201,8 +245,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(3500000.0)
                 .bio("Post-Impressionist painter. I seek, I strive, I am in it with all my heart.")
-                .avatarUrl("https://picsum.photos/id/1005/200/200")
-                .bannerUrl("https://picsum.photos/id/1016/1200/400")
+                .avatarUrl(getAvatarUrl(1))
+                .bannerUrl(getBannerUrl(1))
                 .build();
 
         User monet = User.builder()
@@ -213,8 +257,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(0.0)
                 .bio("Founder of French Impressionist painting. The richness I achieve comes from Nature.")
-                .avatarUrl("https://picsum.photos/id/1012/200/200")
-                .bannerUrl("https://picsum.photos/id/1018/1200/400")
+                .avatarUrl(getAvatarUrl(2))
+                .bannerUrl(getBannerUrl(2))
                 .build();
 
         User mitsuki = User.builder()
@@ -225,8 +269,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(1200000.0)
                 .bio("Professional anime illustrator and manga artist. Open for fantasy and cute characters!")
-                .avatarUrl("https://picsum.photos/id/1027/200/200")
-                .bannerUrl("https://picsum.photos/id/1019/1200/400")
+                .avatarUrl(getAvatarUrl(3))
+                .bannerUrl(getBannerUrl(3))
                 .build();
 
         User skylar = User.builder()
@@ -237,8 +281,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(true)
                 .walletBalance(2000000.0)
                 .bio("Digital landscape artist. Futuristic cityscapes, sci-fi concept arts, and cyberpunk streets.")
-                .avatarUrl("https://picsum.photos/id/1062/200/200")
-                .bannerUrl("https://picsum.photos/id/1022/1200/400")
+                .avatarUrl(getAvatarUrl(4))
+                .bannerUrl(getBannerUrl(4))
                 .build();
 
         User alice = User.builder()
@@ -249,7 +293,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(false)
                 .walletBalance(5000000.0)
                 .bio("Art lover and collector. Interested in classic oil paintings.")
-                .avatarUrl("https://picsum.photos/id/64/200/200")
+                .avatarUrl(getAvatarUrl(5))
                 .build();
 
         User bob = User.builder()
@@ -260,7 +304,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(false)
                 .walletBalance(500000.0)
                 .bio("Just browsing some fine arts around the community.")
-                .avatarUrl("https://picsum.photos/id/91/200/200")
+                .avatarUrl(getAvatarUrl(6))
                 .build();
 
         User emily = User.builder()
@@ -271,7 +315,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .isArtist(false)
                 .walletBalance(1500000.0)
                 .bio("Graphic design student. Fan of digital arts and anime style.")
-                .avatarUrl("https://picsum.photos/id/338/200/200")
+                .avatarUrl(getAvatarUrl(7))
                 .build();
 
         List<User> staticUsers = Arrays.asList(admin, vincent, monet, mitsuki, skylar, alice, bob, emily);
@@ -321,8 +365,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .isArtist(true)
                     .walletBalance(500000.0 + random.nextInt(5) * 1000000.0)
                     .bio(dynamicArtistBios[i])
-                    .avatarUrl(AVATAR_POOL[i])
-                    .bannerUrl(BANNER_POOL[i % BANNER_POOL.length])
+                    .avatarUrl(getAvatarUrl(8 + i))
+                    .bannerUrl(getBannerUrl(5 + i))
                     .build();
             userRepository.save(dynamicArtist);
             allArtists.add(dynamicArtist);
@@ -339,7 +383,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .isArtist(false)
                     .walletBalance(1000000.0 + random.nextInt(10) * 1000000.0)
                     .bio("Interested in discovering beautiful arts. Professional art collector.")
-                    .avatarUrl(AVATAR_POOL[10 + i])
+                    .avatarUrl(getAvatarUrl(18 + i))
                     .build();
             userRepository.save(dynamicClient);
             allClients.add(dynamicClient);
@@ -354,7 +398,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(vincent)
                 .title("The Starry Night")
                 .description("Fascinating view of the night sky from my asylum window in Saint-Rémy-de-Provence.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1002/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(0)))
                 .tags(Arrays.asList("classic", "nature", "oilpainting", "starrysky"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -365,7 +409,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(vincent)
                 .title("Wheatfield with Crows")
                 .description("A dramatic wind-swept wheat field under a dark, stormy sky populated by flying crows.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1011/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(1)))
                 .tags(Arrays.asList("classic", "nature", "oilpainting"))
                 .visibility("logged_in")
                 .commentsEnabled(true)
@@ -376,7 +420,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(vincent)
                 .title("My Private Studio Sketch")
                 .description("A raw, charcoal draft sketch of my temporary workspace.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1024/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(2)))
                 .tags(Arrays.asList("classic", "sketch"))
                 .visibility("private")
                 .commentsEnabled(false)
@@ -387,7 +431,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(monet)
                 .title("Water Lilies")
                 .description("Impression of the lily pond in my garden at Giverny. Exploring light and reflection.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1025/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(3)))
                 .tags(Arrays.asList("classic", "nature", "impressionism"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -398,7 +442,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(monet)
                 .title("The Artist's Garden")
                 .description("Paths of colorful irises and climbing roses leading up to the house.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1035/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(4)))
                 .tags(Arrays.asList("nature", "impressionism"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -409,7 +453,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(mitsuki)
                 .title("Magical Forest Girl")
                 .description("A bright pastel illustration of an elf girl surrounded by glowing mushrooms.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1040/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(5)))
                 .tags(Arrays.asList("anime", "manga", "kawaii", "fantasy", "digitalart"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -420,7 +464,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(mitsuki)
                 .title("Sky Above the Clouds")
                 .description("Anime landscape scenery under golden hour sunlight. Inspired by Shinkai's films.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1044/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(6)))
                 .tags(Arrays.asList("anime", "fantasy", "digitalart"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -431,7 +475,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(mitsuki)
                 .title("Cyberpunk Cafe")
                 .description("Neon-lit cafe shop featuring a cute barista. Exclusively for logged in users.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1050/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(7)))
                 .tags(Arrays.asList("anime", "kawaii", "cyberpunk", "digitalart"))
                 .visibility("logged_in")
                 .commentsEnabled(true)
@@ -442,7 +486,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(skylar)
                 .title("Neon Metropolis")
                 .description("A vast, futuristic city skyline at midnight under pouring acid rain.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1060/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(8)))
                 .tags(Arrays.asList("scifi", "cyberpunk", "digital", "landscape"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -453,7 +497,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .artist(skylar)
                 .title("Abyss Expedition")
                 .description("Concept art featuring space explorers discovering ancient relics in a deep canyon.")
-                .imageUrls(Collections.singletonList("https://picsum.photos/id/1062/800/800"))
+                .imageUrls(Collections.singletonList(getArtworkUrl(9)))
                 .tags(Arrays.asList("scifi", "digital", "conceptart"))
                 .visibility("everyone")
                 .commentsEnabled(true)
@@ -467,10 +511,9 @@ public class DatabaseSeeder implements CommandLineRunner {
         // Dynamically generate illustrations for all artists (each artist gets 3 to 5 works)
         int artIndex = 0;
         for (User artist : allArtists) {
-            // Already generated static ones for Vincent, Monet, Mitsuki, Skylar. Let's add more or seed others
             int countToSeed = 3 + random.nextInt(3); // 3 to 5 illustrations
             for (int j = 0; j < countToSeed; j++) {
-                String imageUrl = ARTWORK_POOL[artIndex % ARTWORK_POOL.length];
+                String imageUrl = getArtworkUrl(10 + artIndex);
                 artIndex++;
 
                 // Title and Description selection
@@ -650,7 +693,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .artist(artist)
                         .title("[Commission Result] Artwork for " + client.getNickname())
                         .description("Delivered work based on request instructions.")
-                        .imageUrls(Collections.singletonList(ARTWORK_POOL[random.nextInt(ARTWORK_POOL.length)]))
+                        .imageUrls(Collections.singletonList(getArtworkUrl(random.nextInt(uploadedArtworks.isEmpty() ? 15 : uploadedArtworks.size()))))
                         .tags(Arrays.asList("commission", "delivery"))
                         .visibility("everyone")
                         .commentsEnabled(true)
@@ -847,5 +890,67 @@ public class DatabaseSeeder implements CommandLineRunner {
         System.out.println("[DatabaseSeeder] Total Bookmarks: " + bookmarkRepository.count());
         System.out.println("[DatabaseSeeder] Total Follows: " + followRepository.count());
         System.out.println("[DatabaseSeeder] Total Commissions: " + commissionRepository.count());
+    }
+
+    private byte[] downloadImage(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+            int status = connection.getResponseCode();
+            if (status == HttpURLConnection.HTTP_OK) {
+                try (InputStream in = connection.getInputStream();
+                     ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                    return out.toByteArray();
+                }
+            } else {
+                System.err.println("[DatabaseSeeder] Failed to download image from " + urlString + ", status: " + status);
+            }
+        } catch (Exception e) {
+            System.err.println("[DatabaseSeeder] Error downloading image from " + urlString + ": " + e.getMessage());
+        }
+        return null;
+    }
+
+    private String uploadFromUrl(String url, String fileName) {
+        if (url == null || url.isEmpty()) return "";
+        byte[] bytes = downloadImage(url);
+        if (bytes != null) {
+            String uploadedUrl = cloudinaryService.uploadBytes(bytes, fileName);
+            if (uploadedUrl != null && !uploadedUrl.isEmpty()) {
+                return uploadedUrl;
+            }
+        }
+        return url; // Fallback to original URL if download or upload fails
+    }
+
+    private String getAvatarUrl(int index) {
+        if (uploadedAvatars == null || uploadedAvatars.isEmpty()) {
+            return AVATAR_POOL[index % AVATAR_POOL.length];
+        }
+        return uploadedAvatars.get(index % uploadedAvatars.size());
+    }
+
+    private String getBannerUrl(int index) {
+        if (uploadedBanners == null || uploadedBanners.isEmpty()) {
+            return BANNER_POOL[index % BANNER_POOL.length];
+        }
+        return uploadedBanners.get(index % uploadedBanners.size());
+    }
+
+    private String getArtworkUrl(int index) {
+        if (uploadedArtworks == null || uploadedArtworks.isEmpty()) {
+            return ARTWORK_POOL[index % ARTWORK_POOL.length];
+        }
+        return uploadedArtworks.get(index % uploadedArtworks.size());
     }
 }

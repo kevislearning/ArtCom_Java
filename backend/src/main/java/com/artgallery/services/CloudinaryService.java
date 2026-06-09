@@ -136,6 +136,38 @@ public class CloudinaryService {
         return path;
     }
 
+    public String uploadBytes(byte[] bytes, String fileName) {
+        if (bytes == null || bytes.length == 0) {
+            return "";
+        }
+        if (this.cloudinary != null) {
+            try {
+                Map<?, ?> options = ObjectUtils.asMap(
+                    "folder", folderName,
+                    "filename", fileName
+                );
+                Map<?, ?> uploadResult = cloudinary.uploader().upload(bytes, options);
+                return uploadResult.get("secure_url").toString();
+            } catch (Exception e) {
+                System.err.println("[CloudinaryService] Bytes upload failed: " + e.getMessage());
+            }
+        }
+        // Local storage fallback (write bytes to local file)
+        try {
+            Path uploadDirectory = Paths.get(localUploadPath);
+            if (!Files.exists(uploadDirectory)) {
+                Files.createDirectories(uploadDirectory);
+            }
+            String uniqueFilename = UUID.randomUUID().toString() + "_" + fileName;
+            Path targetLocation = uploadDirectory.resolve(uniqueFilename);
+            Files.write(targetLocation, bytes);
+            return "http://localhost:5000/uploads/" + uniqueFilename;
+        } catch (Exception e) {
+            System.err.println("[CloudinaryService] Local bytes upload failed: " + e.getMessage());
+            return "";
+        }
+    }
+
     private String uploadFileLocally(MultipartFile file) throws IOException {
         // Ensure directory exists
         Path uploadDirectory = Paths.get(localUploadPath);

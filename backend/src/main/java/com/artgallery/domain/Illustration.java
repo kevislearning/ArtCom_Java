@@ -41,7 +41,7 @@ public class Illustration {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "illustration_image_urls", joinColumns = @JoinColumn(name = "illustration_id"))
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 1000)
     @Builder.Default
     private List<String> imageUrls = new ArrayList<>();
 
