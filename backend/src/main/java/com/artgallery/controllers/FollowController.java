@@ -61,7 +61,7 @@ public class FollowController {
             followed = true;
             message = "Followed user successfully";
 
-            // Trigger notification
+            // Kích hoạt gửi thông báo
             notificationService.createNotification(
                     targetUserId,
                     followerId,

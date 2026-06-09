@@ -12,13 +12,13 @@ import java.util.UUID;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final long jwtExpirationInMs = 30L * 24 * 60 * 60 * 1000; // 30 days
+    private final long jwtExpirationInMs = 30L * 24 * 60 * 60 * 1000; // 30 ngày
 
     public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) {
-        // Enforce secret length for HS256 (needs at least 256 bits / 32 bytes)
+        // Đảm bảo độ dài của secret key cho thuật toán HS256 (cần tối thiểu 256 bits / 32 bytes)
         byte[] secretBytes = jwtSecret.getBytes();
         if (secretBytes.length < 32) {
-            // pad or generate secure key
+            // tự động thêm padding hoặc tạo secure key
             this.key = Keys.hmacShaKeyFor((jwtSecret + "paddingpaddingpaddingpaddingpadding").getBytes());
         } else {
             this.key = Keys.hmacShaKeyFor(secretBytes);
@@ -57,7 +57,7 @@ public class JwtTokenProvider {
             UUID.fromString(subject);
             return true;
         } catch (JwtException | IllegalArgumentException ex) {
-            // log token error
+            // ghi log lỗi token
         }
         return false;
     }

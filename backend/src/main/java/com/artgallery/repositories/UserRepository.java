@@ -18,10 +18,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByUsernameIgnoreCase(String username);
     boolean existsByEmailIgnoreCase(String email);
 
-    // List top 6 artists sorted by totalLikes and totalViews descending
+    // Danh sách 6 họa sĩ hàng đầu sắp xếp giảm dần theo lượt thích (totalLikes) và lượt xem (totalViews)
     List<User> findTop6ByIsArtistTrueOrderByTotalLikesDescTotalViewsDesc();
 
-    // Custom search for users by username or nickname
+    // Tìm kiếm người dùng tùy chỉnh theo tên tài khoản (username) hoặc biệt danh (nickname)
     @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<User> searchUsers(@Param("search") String search);
 }

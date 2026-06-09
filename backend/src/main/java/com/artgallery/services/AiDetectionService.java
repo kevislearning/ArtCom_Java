@@ -50,7 +50,7 @@ public class AiDetectionService {
                 headers.set("Authorization", "Bearer " + hfToken);
             }
 
-            // Create a custom ByteArrayResource with filename to satisfy content-disposition requirements
+            // Tạo ByteArrayResource tùy chỉnh kèm theo tên file để đáp ứng yêu cầu của header content-disposition
             ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
                 @Override
                 public String getFilename() {
@@ -74,7 +74,7 @@ public class AiDetectionService {
                     @SuppressWarnings("unchecked")
                     List<Double> allProbs = (List<Double>) result.get("all_probs");
                     if (allProbs != null && allProbs.size() > 1) {
-                        // Index 1 represents Synthetic (AI-generated) probability
+                        // Phần tử tại index 1 đại diện cho xác suất ảnh được tạo bởi AI (Synthetic)
                         double aiProbability = allProbs.get(1);
                         boolean isAIDetected = aiProbability >= threshold;
                         System.out.println("[AiDetectionService] Probability: " + aiProbability + " (threshold is " + threshold + "). Flagged: " + isAIDetected);

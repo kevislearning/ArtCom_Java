@@ -42,7 +42,7 @@ public class WalletTransaction {
     private double amount;
 
     @Column(nullable = false, length = 30)
-    private String type; // deposit, withdraw, escrow_hold, escrow_release, escrow_refund
+    private String type; // Loại giao dịch: deposit, withdraw, escrow_hold, escrow_release, escrow_refund
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reference_id")

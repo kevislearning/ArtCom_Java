@@ -27,7 +27,7 @@ public class WebSocketChatController {
             output.put("senderId", senderId);
             output.put("isTyping", isTyping);
 
-            // Forward typing status to the receiver's queue
+            // Chuyển tiếp trạng thái đang gõ chữ tới hàng đợi (queue) của người nhận
             messagingTemplate.convertAndSendToUser(receiverId, "/queue/typing", output);
             System.out.println("[WebSocketChatController] Forwarded typing status from " + senderId + " to " + receiverId);
         }

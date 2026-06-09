@@ -25,13 +25,13 @@ class StompSocketWrapper {
     console.log(`[STOMP Wrapper Emit] Event: ${event}`, data);
     
     if (event === 'typing_status' && stompClient && stompClient.connected) {
-      // Expose typing mapping to destination
+      // Đẩy trạng thái đang gõ chữ (typing status) tới kênh tương ứng
       stompClient.publish({
         destination: '/app/chat/typing',
         body: JSON.stringify(data),
       });
     }
-    // 'join_chat' is a no-op as subscriptions handle queue routing natively in STOMP
+    // 'join_chat' không cần xử lý vì STOMP tự động điều hướng định tuyến hàng đợi qua việc subscribe
   }
 
   trigger(event: string, ...args: any[]) {
@@ -64,7 +64,7 @@ export const initSocket = (
   stompClient.onConnect = (frame) => {
     console.log('[STOMP] Connected successfully to Spring Boot WebSocket:', frame);
 
-    // 1. Subscribe to User Notifications Queue
+    // 1. Đăng ký nhận thông báo từ hàng đợi Notification của người dùng
     stompClient?.subscribe('/user/queue/notifications', (message) => {
       try {
         const notif = JSON.parse(message.body);
@@ -76,7 +76,7 @@ export const initSocket = (
       }
     });
 
-    // 2. Subscribe to User Chat Messages Queue
+    // 2. Đăng ký nhận tin nhắn chat từ hàng đợi Message của người dùng
     stompClient?.subscribe('/user/queue/messages', (message) => {
       try {
         const msg = JSON.parse(message.body);
@@ -88,7 +88,7 @@ export const initSocket = (
       }
     });
 
-    // 3. Subscribe to Chat Typing Status Channel
+    // 3. Đăng ký nhận trạng thái đang gõ chữ từ kênh typing
     stompClient?.subscribe('/user/queue/typing', (message) => {
       try {
         const typingData = JSON.parse(message.body);

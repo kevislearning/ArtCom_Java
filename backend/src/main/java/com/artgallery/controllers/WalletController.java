@@ -47,7 +47,7 @@ public class WalletController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // HmacSHA256 signature generator helper
+    // Hàm hỗ trợ tạo chữ ký HmacSHA256
     private String generateMomoSignature(String rawData, String secretKey) {
         try {
             Mac sha256HMAC = Mac.getInstance("HmacSHA256");
@@ -156,11 +156,11 @@ public class WalletController {
             baseClientUrl = clientUrl.split(",")[0].trim();
         }
         String redirectUrl = baseClientUrl + "/wallet";
-        String ipnUrl = "http://localhost:5000/api/wallet/momo-ipn"; // absolute path callback
+        String ipnUrl = "http://localhost:5000/api/wallet/momo-ipn"; // callback đường dẫn tuyệt đối
         String extraData = "";
         String requestType = "captureWallet";
 
-        // Build raw signature string
+        // Xây dựng chuỗi chữ ký thô
         String rawSignature = "accessKey=" + momoAccessKey +
                 "&amount=" + (long)amount +
                 "&extraData=" + extraData +
@@ -287,7 +287,7 @@ public class WalletController {
         try {
             System.out.println("[MoMo Webhook IPN Received] " + data);
 
-            // Reconstruct and verify signature
+            // Tái cấu trúc và xác minh chữ ký
             String rawSignature = "accessKey=" + momoAccessKey +
                     "&amount=" + data.get("amount") +
                     "&extraData=" + data.get("extraData") +

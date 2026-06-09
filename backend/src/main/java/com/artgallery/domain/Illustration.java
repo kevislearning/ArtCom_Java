@@ -54,7 +54,7 @@ public class Illustration {
     private List<String> tags = new ArrayList<>();
 
     @Column(length = 20)
-    private String visibility; // everyone, private, logged_in
+    private String visibility; // Chế độ hiển thị: everyone, private, logged_in
 
     @Column(name = "comments_enabled")
     private boolean commentsEnabled;

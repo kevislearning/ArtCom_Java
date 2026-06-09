@@ -29,7 +29,7 @@ public class CloudinaryService {
             @Value("${cloudinary.api-key}") String apiKey,
             @Value("${cloudinary.api-secret}") String apiSecret) {
         
-        // Only initialize Cloudinary if credentials are configured and not placeholders
+        // Chỉ khởi tạo Cloudinary nếu các thông tin xác thực đã được cấu hình và không phải là ký tự giữ chỗ (placeholder)
         if (cloudName != null && !cloudName.contains("cloud-name") && !cloudName.isEmpty() &&
             apiKey != null && !apiKey.contains("api-key") && !apiKey.isEmpty() &&
             apiSecret != null && !apiSecret.contains("api-secret") && !apiSecret.isEmpty()) {
@@ -50,7 +50,7 @@ public class CloudinaryService {
             return "";
         }
 
-        // If Cloudinary is available, upload to cloud
+        // Nếu Cloudinary khả dụng, thực hiện upload lên dịch vụ cloud
         if (this.cloudinary != null) {
             try {
                 Map<?, ?> options = ObjectUtils.asMap("folder", folderName);
@@ -61,7 +61,7 @@ public class CloudinaryService {
             }
         }
 
-        // Otherwise fallback to local uploads directory
+        // Nếu không, chuyển sang lưu trữ cục bộ tại thư mục uploads
         return uploadFileLocally(file);
     }
 
@@ -94,7 +94,7 @@ public class CloudinaryService {
                 System.err.println("[CloudinaryService] Failed to delete file from Cloudinary: " + e.getMessage());
             }
         } else {
-            // Delete local fallback file
+            // Xóa file lưu trữ cục bộ
             try {
                 if (fileUrl.contains("/uploads/")) {
                     String filename = fileUrl.substring(fileUrl.indexOf("/uploads/") + "/uploads/".length());
@@ -116,7 +116,7 @@ public class CloudinaryService {
 
         String path = url.substring(index + "/image/upload/".length());
 
-        // Remove version component if present (e.g. "v12345678/")
+        // Loại bỏ phần phiên bản nếu có (ví dụ: "v12345678/")
         if (path.startsWith("v")) {
             int firstSlash = path.indexOf('/');
             if (firstSlash != -1) {
@@ -127,7 +127,7 @@ public class CloudinaryService {
             }
         }
 
-        // Remove file extension
+        // Loại bỏ phần mở rộng của file (đuôi file)
         int dotIndex = path.lastIndexOf('.');
         if (dotIndex != -1) {
             path = path.substring(0, dotIndex);
@@ -152,7 +152,7 @@ public class CloudinaryService {
                 System.err.println("[CloudinaryService] Bytes upload failed: " + e.getMessage());
             }
         }
-        // Local storage fallback (write bytes to local file)
+        // Phương án dự phòng lưu trữ cục bộ (ghi mảng byte ra file cục bộ)
         try {
             Path uploadDirectory = Paths.get(localUploadPath);
             if (!Files.exists(uploadDirectory)) {
@@ -169,13 +169,13 @@ public class CloudinaryService {
     }
 
     private String uploadFileLocally(MultipartFile file) throws IOException {
-        // Ensure directory exists
+        // Đảm bảo thư mục lưu trữ đã tồn tại
         Path uploadDirectory = Paths.get(localUploadPath);
         if (!Files.exists(uploadDirectory)) {
             Files.createDirectories(uploadDirectory);
         }
 
-        // Generate unique name
+        // Tạo tên file duy nhất để tránh trùng lặp
         String originalFilename = file.getOriginalFilename();
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
@@ -186,7 +186,7 @@ public class CloudinaryService {
         Path targetLocation = uploadDirectory.resolve(uniqueFilename);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-        // Return path relative to server URL: http://localhost:5000/uploads/filename
+        // Trả về đường dẫn tương đối theo URL của server: http://localhost:5000/uploads/filename
         return "http://localhost:5000/uploads/" + uniqueFilename;
     }
 }

@@ -55,7 +55,7 @@ public class IllustrationController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Map Illustration entity to include liked/bookmarked properties for a user
+    // Ánh xạ entity Illustration để thêm các thuộc tính liked/bookmarked tương ứng với người dùng
     private Map<String, Object> mapToResponse(Illustration ill, User user) {
         Map<String, Object> map = new HashMap<>();
         map.put("_id", ill.getId().toString());
@@ -74,7 +74,7 @@ public class IllustrationController {
         map.put("createdAt", ill.getCreatedAt());
         map.put("updatedAt", ill.getUpdatedAt());
 
-        // Artist details
+        // Chi tiết thông tin Họa sĩ (Artist)
         Map<String, Object> artistMap = new HashMap<>();
         artistMap.put("_id", ill.getArtist().getId().toString());
         artistMap.put("username", ill.getArtist().getUsername());
@@ -83,7 +83,7 @@ public class IllustrationController {
         artistMap.put("isArtist", ill.getArtist().isArtist());
         map.put("artistId", artistMap);
 
-        // Interaction indicators
+        // Các chỉ số tương tác (liked, bookmarked)
         boolean liked = false;
         boolean bookmarked = false;
         if (user != null) {
@@ -116,9 +116,9 @@ public class IllustrationController {
         UUID artistId = null;
         if (artistIdStr != null && !artistIdStr.isEmpty()) {
             artistId = UUID.fromString(artistIdStr);
-            // If the artist is querying their own feed, bypass standard visibility limitations
+            // Nếu họa sĩ đang truy vấn feed của chính họ, bỏ qua các giới hạn hiển thị tiêu chuẩn
             if (authUser != null && authUser.getId().equals(artistId)) {
-                visibilities = null; // null represents bypass/all visibilities
+                visibilities = null; // giá trị null đại diện cho việc bỏ qua bộ lọc / lấy toàn bộ chế độ hiển thị
             }
         }
 
@@ -141,10 +141,10 @@ public class IllustrationController {
                 visibilities, artistId, tag, search, startDate, PageRequest.of(0, 1000)
         );
 
-        // Sort items dynamically in Java to match exactly the Node.js sorting logic
+        // Sắp xếp các mục một cách động trong Java để khớp chính xác với logic sắp xếp của Node.js
         if (sort != null) {
             if ("popular".equalsIgnoreCase(sort)) {
-                // likesCount DESC, bookmarksCount DESC, viewsCount DESC
+                // sắp xếp theo likesCount giảm dần, bookmarksCount giảm dần, viewsCount giảm dần
                 illustrations.sort((a, b) -> {
                     int c1 = Integer.compare(b.getLikesCount(), a.getLikesCount());
                     if (c1 != 0) return c1;
@@ -153,7 +153,7 @@ public class IllustrationController {
                     return Integer.compare(b.getViewsCount(), a.getViewsCount());
                 });
             } else if ("recommended".equalsIgnoreCase(sort)) {
-                // viewsCount DESC, likesCount DESC
+                // sắp xếp theo viewsCount giảm dần, likesCount giảm dần
                 illustrations.sort((a, b) -> {
                     int c1 = Integer.compare(b.getViewsCount(), a.getViewsCount());
                     if (c1 != 0) return c1;
@@ -171,7 +171,7 @@ public class IllustrationController {
                 illustrations.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
             }
         } else {
-            // default is newest
+            // mặc định là mới nhất
             illustrations.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
         }
 
@@ -228,7 +228,7 @@ public class IllustrationController {
         boolean isAIDetected = false;
         double aiProbability = 0.0;
 
-        // Perform AI scan using hugging face if not declared
+        // Thực hiện quét AI bằng Hugging Face nếu người dùng không khai báo tự động
         if (!userDeclaredAI && !files.isEmpty()) {
             System.out.println("[IllustrationController] Performing AI detection on upload: " + title);
             AiDetectionService.DetectionResult scan = aiDetectionService.scanImage(files.get(0));
@@ -236,10 +236,10 @@ public class IllustrationController {
             aiProbability = scan.aiProbability;
         }
 
-        // Upload images to Cloudinary or local disk fallback
+        // Upload ảnh lên Cloudinary hoặc dùng bộ nhớ lưu trữ cục bộ làm dự phòng
         List<String> imageUrls = cloudinaryService.uploadMultipleFiles(files);
 
-        // Fetch reloaded User object
+        // Lấy đối tượng người dùng (User) đã được tải lại từ database
         User artist = userRepository.findById(authUser.getId()).orElseThrow();
 
         Illustration illustration = Illustration.builder()
@@ -260,7 +260,7 @@ public class IllustrationController {
 
         illustration = illustrationRepository.save(illustration);
 
-        // Send notifications to all artist's followers
+        // Gửi thông báo tới tất cả người theo dõi của họa sĩ
         List<Follow> followers = followRepository.findByFollowingId(artist.getId());
         for (Follow f : followers) {
             notificationService.createNotification(
@@ -288,11 +288,11 @@ public class IllustrationController {
 
         Illustration ill = illOpt.get();
 
-        // Increment views count
+        // Tăng số lượt xem (viewsCount)
         ill.setViewsCount(ill.getViewsCount() + 1);
         illustrationRepository.save(ill);
 
-        // Trigger asynchronous stats recalculation
+        // Kích hoạt tính toán lại số liệu thống kê một cách bất đồng bộ
         statsService.updateArtistStats(ill.getArtist().getId());
 
         return ResponseEntity.ok(mapToResponse(ill, authUser));
@@ -367,19 +367,19 @@ public class IllustrationController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You are not authorized to delete this work"));
         }
 
-        // Keep a copy of image URLs to delete from storage
+        // Giữ một bản sao danh sách URL ảnh để thực hiện xóa khỏi bộ lưu trữ
         List<String> imageUrlsToDelete = new ArrayList<>(ill.getImageUrls());
 
         illustrationRepository.delete(ill);
 
-        // Delete associated Likes and Bookmarks
+        // Xóa các lượt thích (Like) và đánh dấu (Bookmark) liên kết
         likeRepository.deleteByUserIdAndIllustrationId(authUser.getId(), ill.getId());
         bookmarkRepository.deleteByUserIdAndIllustrationId(authUser.getId(), ill.getId());
 
-        // Update stats
+        // Cập nhật số liệu thống kê
         statsService.updateArtistStats(authUser.getId());
 
-        // Delete files from storage
+        // Xóa các file ảnh khỏi bộ lưu trữ
         if (imageUrlsToDelete != null) {
             for (String url : imageUrlsToDelete) {
                 try {
@@ -422,7 +422,7 @@ public class IllustrationController {
             ill.setLikesCount(ill.getLikesCount() + 1);
             liked = true;
 
-            // Trigger notification
+            // Kích hoạt gửi thông báo
             notificationService.createNotification(
                     ill.getArtist().getId(),
                     user.getId(),
@@ -435,7 +435,7 @@ public class IllustrationController {
 
         ill = illustrationRepository.save(ill);
 
-        // Update stats asynchronously
+        // Cập nhật số liệu thống kê một cách bất đồng bộ
         statsService.updateArtistStats(ill.getArtist().getId());
 
         return ResponseEntity.ok(Map.of("liked", liked, "likesCount", ill.getLikesCount()));
@@ -470,7 +470,7 @@ public class IllustrationController {
             ill.setBookmarksCount(ill.getBookmarksCount() + 1);
             bookmarked = true;
 
-            // Trigger notification
+            // Kích hoạt gửi thông báo
             notificationService.createNotification(
                     ill.getArtist().getId(),
                     user.getId(),
@@ -483,7 +483,7 @@ public class IllustrationController {
 
         ill = illustrationRepository.save(ill);
 
-        // Update stats asynchronously
+        // Cập nhật số liệu thống kê một cách bất đồng bộ
         statsService.updateArtistStats(ill.getArtist().getId());
 
         return ResponseEntity.ok(Map.of("bookmarked", bookmarked, "bookmarksCount", ill.getBookmarksCount()));
@@ -519,7 +519,7 @@ public class IllustrationController {
 
         for (Object[] row : queryResults) {
             result.add(Map.of(
-                    "_id", row[0], // tag name in lowercase
+                    "_id", row[0], // tên tag viết thường
                     "count", row[1]
             ));
         }

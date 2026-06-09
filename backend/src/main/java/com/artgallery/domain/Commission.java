@@ -51,10 +51,10 @@ public class Commission {
     private Date deadline;
 
     @Column(name = "payment_status", length = 30)
-    private String paymentStatus; // unpaid, escrow, paid_to_artist, refunded
+    private String paymentStatus; // Trạng thái thanh toán: unpaid, escrow, paid_to_artist, refunded
 
     @Column(length = 30)
-    private String status; // pending, accepted, in_progress, completed, canceled, rejected
+    private String status; // Trạng thái commission: pending, accepted, in_progress, completed, canceled, rejected
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "result_illustration_id")

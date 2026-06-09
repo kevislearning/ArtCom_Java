@@ -149,7 +149,7 @@ public class User {
         this.updatedAt = new Date();
     }
 
-    // Embeddable Value Objects
+    // Các Value Object dạng nhúng (Embeddable)
     @Embeddable
     @Data
     @NoArgsConstructor

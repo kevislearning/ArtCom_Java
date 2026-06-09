@@ -9,7 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Map public /uploads/** to local directory uploads/
+        // Ánh xạ đường dẫn công khai /uploads/** tới thư mục local uploads/
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
     }

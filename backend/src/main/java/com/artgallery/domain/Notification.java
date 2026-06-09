@@ -44,13 +44,13 @@ public class Notification {
     private User actor;
 
     @Column(nullable = false, length = 50)
-    private String type; // new_illustration, like, bookmark, follow, comment, reply, commission_update, message
+    private String type; // Loại thông báo: new_illustration, like, bookmark, follow, comment, reply, commission_update, message
 
     @Column(name = "target_id", columnDefinition = "UUID")
     private UUID targetId;
 
     @Column(name = "target_model", length = 50)
-    private String targetModel; // Illustration, Commission, Comment, Message
+    private String targetModel; // Model đối tượng đích: Illustration, Commission, Comment, Message
 
     @Column(name = "content_preview")
     private String contentPreview;

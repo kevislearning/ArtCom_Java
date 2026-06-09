@@ -42,29 +42,29 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Health Check and Error Dispatch
+                // Cổng kiểm tra sức khỏe hệ thống (Health Check) và điều hướng lỗi
                 .requestMatchers("/api/health", "/error").permitAll()
                 
-                // Auth public routes
+                // Các router xác thực (Auth) công khai
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/google", "/api/auth/artists/recommended", "/api/auth/profile/**", "/api/auth/search").permitAll()
                 
-                // Illustrations public views
+                // Các view công khai cho Tác phẩm (Illustration)
                 .requestMatchers(HttpMethod.GET, "/api/illustrations", "/api/illustrations/trending-tags", "/api/illustrations/tags/search").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/illustrations/{id}").permitAll()
                 
-                // Comments public views
+                // Các view công khai cho Bình luận (Comment)
                 .requestMatchers(HttpMethod.GET, "/api/comments/illustration/**").permitAll()
                 
-                // Static file serving fallback
+                // Đường dẫn tĩnh hỗ trợ truy cập file lưu trữ cục bộ
                 .requestMatchers("/uploads/**").permitAll()
                 
-                // WebSocket handshakes
+                // Bắt tay kết nối WebSocket
                 .requestMatchers("/ws/**").permitAll()
                 
-                // Webhook callbacks
+                // Điểm nhận callback từ Webhook
                 .requestMatchers("/api/wallet/momo-ipn").permitAll()
                 
-                // Any other request must be authenticated
+                // Mọi yêu cầu khác đều cần được xác thực
                 .anyRequest().authenticated()
             );
 

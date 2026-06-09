@@ -77,13 +77,13 @@ public class CommissionController {
             return ResponseEntity.badRequest().body(Map.of("message", "Selected user is not open for commission"));
         }
 
-        // Check client balance reload from DB
+        // Kiểm tra số dư tài khoản khách hàng được tải lại từ DB
         User client = userRepository.findById(clientId).orElseThrow();
         if (client.getWalletBalance() < price) {
             return ResponseEntity.badRequest().body(Map.of("message", "Insufficient wallet balance"));
         }
 
-        // Upload reference images to Cloudinary if any
+        // Upload ảnh tham khảo (reference images) lên Cloudinary nếu có
         List<String> refImageUrls = new ArrayList<>();
         if (referenceImages != null && !referenceImages.isEmpty()) {
             refImageUrls = cloudinaryService.uploadMultipleFiles(referenceImages);
@@ -100,7 +100,7 @@ public class CommissionController {
             deadlineDate = new Date();
         }
 
-        // Create commission
+        // Tạo commission
         Commission commission = Commission.builder()
                 .client(client)
                 .artist(artist)
@@ -116,10 +116,10 @@ public class CommissionController {
 
         commission = commissionRepository.save(commission);
 
-        // Lock client balance in escrow
+        // Khóa tiền số dư của khách trong tài khoản trung gian (escrow)
         walletService.escrowHold(clientId, price, "Đặt cọc cho yêu cầu vẽ commission: \"" + title + "\"", commission);
 
-        // Trigger notification
+        // Kích hoạt gửi thông báo
         notificationService.createNotification(
                 artistId,
                 clientId,
@@ -158,7 +158,7 @@ public class CommissionController {
         commission.setStatus("accepted");
         commission = commissionRepository.save(commission);
 
-        // Notify client
+        // Thông báo cho khách hàng
         notificationService.createNotification(
                 commission.getClient().getId(),
                 authUser.getId(),
@@ -197,10 +197,10 @@ public class CommissionController {
         commission.setStatus("rejected");
         commission = commissionRepository.save(commission);
 
-        // Refund client
+        // Hoàn tiền lại cho khách hàng
         walletService.escrowRefund(commission.getClient().getId(), commission.getPrice(), "Hoàn tiền cọc commission do Artist từ chối: \"" + commission.getTitle() + "\"", commission);
 
-        // Notify client
+        // Thông báo cho khách hàng
         notificationService.createNotification(
                 commission.getClient().getId(),
                 authUser.getId(),
@@ -246,7 +246,7 @@ public class CommissionController {
         commission.setStatus("canceled");
         commission = commissionRepository.save(commission);
 
-        // Refund client
+        // Hoàn tiền lại cho khách hàng
         walletService.escrowRefund(commission.getClient().getId(), commission.getPrice(), "Hoàn tiền cọc commission do hủy giao dịch: \"" + commission.getTitle() + "\"", commission);
 
         UUID recipientId = isClient ? commission.getArtist().getId() : commission.getClient().getId();
@@ -291,7 +291,7 @@ public class CommissionController {
 
         List<String> imageUrls = cloudinaryService.uploadMultipleFiles(files);
 
-        // Create completed artwork illustration
+        // Tạo tác phẩm Illustration hoàn chỉnh sau khi hoàn thành
         Illustration resultIllustration = Illustration.builder()
                 .artist(commission.getArtist())
                 .title("[Commission Result] " + commission.getTitle())
@@ -311,10 +311,10 @@ public class CommissionController {
 
         commission = commissionRepository.save(commission);
 
-        // Release escrow money to artist
+        // Giải ngân tiền cọc từ tài khoản trung gian (escrow) cho họa sĩ
         walletService.escrowRelease(commission.getArtist().getId(), commission.getPrice(), "Nhận thanh toán hoàn thành commission: \"" + commission.getTitle() + "\"", commission);
 
-        // Notify client
+        // Thông báo cho khách hàng
         notificationService.createNotification(
                 commission.getClient().getId(),
                 authUser.getId(),

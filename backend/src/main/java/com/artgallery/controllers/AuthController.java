@@ -48,15 +48,15 @@ public class AuthController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Response Sender helper
+    // Hàm hỗ trợ gửi Token trong Response
     private ResponseEntity<Map<String, Object>> sendTokenResponse(User user, int statusCode, HttpServletResponse response) {
         String token = tokenProvider.generateToken(user.getId());
 
-        // Set httpOnly Cookie
+        // Cài đặt httpOnly Cookie
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setMaxAge(30 * 24 * 60 * 60); // 30 days
+        cookie.setMaxAge(30 * 24 * 60 * 60); // 30 ngày
         cookie.setPath("/");
         response.addCookie(cookie);
 
@@ -187,7 +187,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Current password and new password are required"));
         }
 
-        // reload from DB to ensure accurate object state
+        // Tải lại từ DB để đảm bảo trạng thái đối tượng chính xác
         User user = userRepository.findById(authUser.getId()).orElseThrow();
 
         if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
@@ -228,7 +228,7 @@ public class AuthController {
             user.setArtist("true".equalsIgnoreCase(isArtistStr));
         }
 
-        // Helper to parse JSON string of nested properties
+        // Hàm hỗ trợ để parse chuỗi JSON của các thuộc tính lồng nhau
         if (socialLinksStr != null) {
             user.setSocialLinks(objectMapper.readValue(socialLinksStr, User.SocialLinks.class));
         }
@@ -252,7 +252,7 @@ public class AuthController {
             user.setCustomSocialLinks(new ArrayList<>(Arrays.asList(customLinks)));
         }
 
-        // Upload files
+        // Upload các tệp tin
         if (avatarFile != null && !avatarFile.isEmpty()) {
             user.setAvatarUrl(cloudinaryService.uploadFile(avatarFile));
         }
@@ -293,7 +293,7 @@ public class AuthController {
         }
 
         user.setRequestTerms(terms);
-        user.setArtist(true); // synchronize roles to match
+        user.setArtist(true); // Đồng bộ hóa các vai trò cho khớp
 
         user = userRepository.save(user);
         return ResponseEntity.ok(user);
@@ -308,7 +308,7 @@ public class AuthController {
         User user = userRepository.findById(authUser.getId()).orElseThrow();
 
         user.setRequestTerms(new User.RequestTerms("", "", 0.0, "", false));
-        user.setArtist(false); // reset roles to match
+        user.setArtist(false); // Đặt lại các vai trò cho khớp
 
         user = userRepository.save(user);
         return ResponseEntity.ok(user);
@@ -342,7 +342,7 @@ public class AuthController {
             uMap.put("totalBookmarks", u.getTotalBookmarks());
             uMap.put("totalComments", u.getTotalComments());
 
-            // Get latest 3 artworks for each user
+            // Lấy 3 tác phẩm mới nhất cho mỗi người dùng
             List<Illustration> artworks = illustrationRepository.findByArtistIdOrderByCreatedAtDesc(u.getId());
             List<Map<String, Object>> artList = new ArrayList<>();
             int limit = Math.min(artworks.size(), 3);
@@ -389,7 +389,7 @@ public class AuthController {
         User user;
 
         if (userOpt.isEmpty()) {
-            // Provision new user
+            // Thiết lập thông tin cho người dùng mới
             String emailPrefix = googleInfo.email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9]", "");
             String baseUsername = emailPrefix.isEmpty() ? "user" : emailPrefix;
             String username = baseUsername;
@@ -400,7 +400,7 @@ public class AuthController {
                 counter++;
             }
 
-            // Generate secure dummy password hash
+            // Tạo mã băm mật khẩu giả lập bảo mật
             String randomPass = UUID.randomUUID().toString();
             user = User.builder()
                     .username(username)
@@ -434,7 +434,7 @@ public class AuthController {
         boolean isMe = authUser != null && authUser.getId().equals(id);
 
         if (!isMe) {
-            // Null out private fields according to original logic
+            // Đặt giá trị null cho các trường riêng tư theo logic ban đầu
             if (user.getWebsite() != null && !user.getWebsite().isPublic()) {
                 user.setWebsite(new User.Website("", false));
             }

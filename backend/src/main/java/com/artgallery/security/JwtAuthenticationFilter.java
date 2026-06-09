@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Optional<User> userOpt = userRepository.findById(userId);
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
-                    // Wrap the user entity as principal, with empty authorities list
+                    // Bọc entity người dùng làm principal, với danh sách quyền hạn (authorities) trống
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             user, null, Collections.emptyList());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -56,13 +56,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        // 1. Try to read from Authorization header
+        // 1. Thử đọc từ header Authorization
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
 
-        // 2. Try to read from Cookies
+        // 2. Thử đọc từ Cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("token".equals(cookie.getName())) {
@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        // 3. Try to read from query parameter (e.g. for WebSockets query connect parameter)
+        // 3. Thử đọc từ tham số truy vấn (query parameter - ví dụ: khi kết nối WebSockets)
         String tokenParam = request.getParameter("token");
         if (StringUtils.hasText(tokenParam)) {
             return tokenParam;

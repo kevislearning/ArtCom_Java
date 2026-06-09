@@ -54,7 +54,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-    // Pools of Lorem Picsum High-Quality URLs (using static IDs for reliability and speed)
+    // Danh sách URL ảnh chất lượng cao từ Lorem Picsum (sử dụng ID cố định để đảm bảo độ tin cậy và tốc độ)
     private static final String[] AVATAR_POOL = {
         "https://picsum.photos/id/10/200/200",
         "https://picsum.photos/id/22/200/200",
@@ -92,7 +92,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     };
 
     private static final String[] ARTWORK_POOL = {
-        // Picsum High Quality Images
+        // Ảnh chất lượng cao từ Picsum
         "https://picsum.photos/id/151/800/800",
         "https://picsum.photos/id/152/800/800",
         "https://picsum.photos/id/153/800/800",
@@ -108,7 +108,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         "https://picsum.photos/id/163/800/800",
         "https://picsum.photos/id/164/800/800",
         "https://picsum.photos/id/165/800/800",
-        // Classic Masterpieces (Wikimedia Commons)
+        // Các tác phẩm nghệ thuật kinh điển (từ Wikimedia Commons)
         "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/800px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
         "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/500px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
         "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Claude_Monet_-_Water_Lilies_-_Google_Art_Project.jpg/800px-Claude_Monet_-_Water_Lilies_-_Google_Art_Project.jpg",
@@ -121,7 +121,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg/500px-Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg",
         "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Vincent_van_Gogh_-_Cafe_Terrace_at_Night_%28F433%29_-_Google_Art_Project.jpg/500px-Vincent_van_Gogh_-_Cafe_Terrace_at_Night_%28F433%29_-_Google_Art_Project.jpg",
         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Irises-Vincent_van_Gogh.jpg/800px-Irises-Vincent_van_Gogh.jpg",
-        // Digital Art / Concept Art (Artstation-style CDNA)
+        // Nghệ thuật kỹ thuật số / Concept Art (dạng CDNA từ Artstation)
         "https://cdna.artstation.com/p/assets/images/images/017/233/178/large/concept-art-environment.jpg",
         "https://cdna.artstation.com/p/assets/images/images/000/093/172/large/scifi-city-concept.jpg",
         "https://cdna.artstation.com/p/assets/images/images/009/881/364/large/cyberpunk-street-alley.jpg"
@@ -180,7 +180,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         "Giá đó hợp lý quá, mình sẽ đặt cọc ngay trên web nhé. Cảm ơn họa sĩ!"
     };
 
-    // Cached pools of uploaded Cloudinary image URLs
+    // Danh sách URL ảnh đã upload thành công lên Cloudinary
     private List<String> uploadedAvatars = new ArrayList<>();
     private List<String> uploadedBanners = new ArrayList<>();
     private List<String> uploadedArtworks = new ArrayList<>();
@@ -194,24 +194,24 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         System.out.println("[DatabaseSeeder] Seeding database with expanded dynamic dataset...");
 
-        // --- 0. DOWNLOAD AND UPLOAD SEED IMAGES TO CLOUDINARY ---
+        // --- 0. TẢI VỀ VÀ UPLOAD ẢNH SEED LÊN CLOUDINARY ---
         System.out.println("[DatabaseSeeder] Downloading and uploading seed images to Cloudinary (artGallery_java)...");
 
-        // Upload first 10 Avatars
+        // Upload 10 Avatar đầu tiên
         for (int i = 0; i < Math.min(10, AVATAR_POOL.length); i++) {
             String url = AVATAR_POOL[i];
             String uploadedUrl = uploadFromUrl(url, "avatar_" + i + ".jpg");
             uploadedAvatars.add(uploadedUrl);
         }
 
-        // Upload first 5 Banners
+        // Upload 5 Banner đầu tiên
         for (int i = 0; i < Math.min(5, BANNER_POOL.length); i++) {
             String url = BANNER_POOL[i];
             String uploadedUrl = uploadFromUrl(url, "banner_" + i + ".jpg");
             uploadedBanners.add(uploadedUrl);
         }
 
-        // Upload first 30 Artworks
+        // Upload 30 Tác phẩm đầu tiên
         for (int i = 0; i < Math.min(30, ARTWORK_POOL.length); i++) {
             String url = ARTWORK_POOL[i];
             String uploadedUrl = uploadFromUrl(url, "artwork_" + i + ".jpg");
@@ -224,7 +224,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         Random random = new Random();
         String defaultPasswordHash = passwordEncoder.encode("password123");
 
-        // --- 1. CREATE CORE STATIC USERS ---
+        // --- 1. TẠO CÁC TÀI KHOẢN NGƯỜI DÙNG TĨNH CỐ ĐỊNH ---
         User admin = User.builder()
                 .username("admin")
                 .email("admin@artcom.me")
@@ -321,12 +321,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<User> staticUsers = Arrays.asList(admin, vincent, monet, mitsuki, skylar, alice, bob, emily);
         userRepository.saveAll(staticUsers);
 
-        // Lists to partition users for relation wiring
+        // Các danh sách phân loại người dùng để thiết lập quan hệ liên kết
         List<User> allArtists = new ArrayList<>(Arrays.asList(vincent, monet, mitsuki, skylar));
         List<User> allClients = new ArrayList<>(Arrays.asList(admin, alice, bob, emily));
         List<User> allUsers = new ArrayList<>(staticUsers);
 
-        // --- 2. GENERATE DYNAMIC USERS (20 Users) ---
+        // --- 2. TẠO NGƯỜI DÙNG ĐỘNG (20 Người dùng) ---
         String[] dynamicArtistNames = {
             "Pierre-Auguste Renoir", "Edgar Degas", "Gustav Klimt", "Leonardo da Vinci", "Rembrandt van Rijn",
             "Kusanagi Studio", "Shiro Anime Art", "CyberVibe Designs", "NeonDreams SciFi", "InkSplash Watercolor"
@@ -355,7 +355,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             "charlie", "david", "fiona", "grace", "henry", "iris", "jack", "karen", "leo", "mia"
         };
 
-        // Create Dynamic Artists
+        // Tạo các Họa sĩ (Artist) động
         for (int i = 0; i < dynamicArtistNames.length; i++) {
             User dynamicArtist = User.builder()
                     .username(dynamicArtistUsernames[i])
@@ -373,7 +373,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             allUsers.add(dynamicArtist);
         }
 
-        // Create Dynamic Clients
+        // Tạo các Khách hàng (Client) động
         for (int i = 0; i < dynamicClientNames.length; i++) {
             User dynamicClient = User.builder()
                     .username(dynamicClientUsernames[i])
@@ -390,10 +390,10 @@ public class DatabaseSeeder implements CommandLineRunner {
             allUsers.add(dynamicClient);
         }
 
-        // --- 3. GENERATE ILLUSTRATIONS ---
+        // --- 3. TẠO TÁC PHẨM (ILLUSTRATION) ---
         List<Illustration> allIllustrations = new ArrayList<>();
 
-        // Generate core static illustrations first (Vincent & Monet & Mitsuki & Skylar originals)
+        // Tạo các tác phẩm gốc cố định của Vincent, Monet, Mitsuki & Skylar trước
         Illustration i1_v = Illustration.builder()
                 .artist(vincent)
                 .title("The Starry Night")
@@ -508,7 +508,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         illustrationRepository.saveAll(staticIllustrations);
         allIllustrations.addAll(staticIllustrations);
 
-        // Dynamically generate illustrations for all artists (each artist gets 3 to 5 works)
+        // Tạo tác phẩm ngẫu nhiên cho tất cả họa sĩ (mỗi họa sĩ có từ 3 đến 5 tác phẩm)
         int artIndex = 0;
         for (User artist : allArtists) {
             int countToSeed = 3 + random.nextInt(3); // 3 to 5 illustrations
@@ -516,11 +516,11 @@ public class DatabaseSeeder implements CommandLineRunner {
                 String imageUrl = getArtworkUrl(10 + artIndex);
                 artIndex++;
 
-                // Title and Description selection
+                // Lựa chọn tiêu đề và mô tả
                 String title = ART_TITLES[random.nextInt(ART_TITLES.length)] + " (" + (j + 1) + ")";
                 String description = ART_DESCRIPTIONS[random.nextInt(ART_DESCRIPTIONS.length)];
 
-                // Gather tags
+                // Tập hợp các tag
                 List<String> tags = new ArrayList<>();
                 int tagCount = 2 + random.nextInt(3);
                 while (tags.size() < tagCount) {
@@ -530,7 +530,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     }
                 }
 
-                // Visibility distribution: 80% everyone, 15% logged_in, 5% private
+                // Phân bổ chế độ hiển thị: 80% everyone, 15% logged_in, 5% private
                 int visChance = random.nextInt(100);
                 String visibility = "everyone";
                 if (visChance >= 80 && visChance < 95) {
@@ -555,7 +555,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             }
         }
 
-        // --- 4. GENERATE INTERACTIVE FOLLOWS (All users follow 3-7 artists) ---
+        // --- 4. TẠO CÁC LƯỢT THEO DÕI (Mỗi người dùng theo dõi từ 3-7 họa sĩ) ---
         List<Follow> allFollows = new ArrayList<>();
         for (User follower : allUsers) {
             int followsCount = 3 + random.nextInt(5); // 3 to 7 follows
@@ -574,14 +574,14 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         followRepository.saveAll(allFollows);
 
-        // --- 5. GENERATE INTERACTIVE LIKES & BOOKMARKS ---
+        // --- 5. TẠO CÁC LƯỢT THÍCH (LIKE) & ĐÁNH DẤU (BOOKMARK) ---
         List<Like> allLikes = new ArrayList<>();
         List<Bookmark> allBookmarks = new ArrayList<>();
 
         for (Illustration ill : allIllustrations) {
             if ("private".equals(ill.getVisibility())) continue;
 
-            // Generate Likes (15% to 60% of all users like this work)
+            // Tạo các lượt thích (15% đến 60% tổng số người dùng thích tác phẩm này)
             int likeTargetPercent = 15 + random.nextInt(46);
             int likeTargetCount = (allUsers.size() * likeTargetPercent) / 100;
             List<User> shuffledUsers = new ArrayList<>(allUsers);
@@ -599,7 +599,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             }
             ill.setLikesCount(likesAdded);
 
-            // Generate Bookmarks (5% to 25% of all users bookmark this work)
+            // Tạo các lượt đánh dấu (5% đến 25% tổng số người dùng đánh dấu tác phẩm này)
             int bookmarkTargetPercent = 5 + random.nextInt(21);
             int bookmarkTargetCount = (allUsers.size() * bookmarkTargetPercent) / 100;
             Collections.shuffle(shuffledUsers);
@@ -620,12 +620,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         likeRepository.saveAll(allLikes);
         bookmarkRepository.saveAll(allBookmarks);
 
-        // --- 6. GENERATE INTERACTIVE COMMENTS ---
+        // --- 6. TẠO CÁC BÌNH LUẬN TƯƠNG TÁC ---
         List<Comment> allComments = new ArrayList<>();
         for (Illustration ill : allIllustrations) {
             if (!ill.isCommentsEnabled() || "private".equals(ill.getVisibility())) continue;
 
-            int commentCount = 1 + random.nextInt(5); // 1 to 5 comments
+            int commentCount = 1 + random.nextInt(5); // 1 đến 5 bình luận
             int commentsAdded = 0;
 
             for (int c = 0; c < commentCount; c++) {
@@ -641,7 +641,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 allComments.add(comment);
                 commentsAdded++;
 
-                // 30% chance for a reply
+                // 30% cơ hội có phản hồi (reply)
                 if (random.nextInt(10) < 3) {
                     User replier = random.nextBoolean() ? ill.getArtist() : allUsers.get(random.nextInt(allUsers.size()));
                     String replyContent = REPLY_TEXTS[random.nextInt(REPLY_TEXTS.length)];
@@ -660,12 +660,12 @@ public class DatabaseSeeder implements CommandLineRunner {
             illustrationRepository.save(ill);
         }
 
-        // --- 7. GENERATE DYNAMIC COMMISSIONS ---
+        // --- 7. TẠO CÁC YÊU CẦU COMMISSION ĐỘNG ---
         List<Commission> allCommissions = new ArrayList<>();
         List<WalletTransaction> allTransactions = new ArrayList<>();
 
         String[] commissionStatuses = {"pending", "accepted", "in_progress", "completed", "canceled", "rejected"};
-        int commissionsCount = 12 + random.nextInt(5); // 12 to 16 commissions
+        int commissionsCount = 12 + random.nextInt(5); // 12 đến 16 commission
 
         for (int i = 0; i < commissionsCount; i++) {
             User client = allClients.get(random.nextInt(allClients.size()));
@@ -685,10 +685,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 paymentStatus = "refunded";
             }
 
-            // Target illustration for completed commission
+            // Tác phẩm đích cho commission đã hoàn thành
             Illustration resultArtwork = null;
             if ("completed".equals(status)) {
-                // Find or build completed work illustration
+                // Tìm hoặc dựng tác phẩm hoàn thành của commission
                 resultArtwork = Illustration.builder()
                         .artist(artist)
                         .title("[Commission Result] Artwork for " + client.getNickname())
@@ -719,7 +719,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             commissionRepository.save(commission);
             allCommissions.add(commission);
 
-            // Create transactions matching payment status
+            // Tạo giao dịch phù hợp với trạng thái thanh toán
             if ("escrow".equals(paymentStatus)) {
                 WalletTransaction escrowHold = WalletTransaction.builder()
                         .user(client)
@@ -730,7 +730,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build();
                 allTransactions.add(escrowHold);
             } else if ("paid_to_artist".equals(paymentStatus)) {
-                // Client deposits
+                // Khách nạp tiền
                 WalletTransaction clientDeposit = WalletTransaction.builder()
                         .user(client)
                         .amount(price)
@@ -739,7 +739,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build();
                 allTransactions.add(clientDeposit);
 
-                // Client hold
+                // Khách bị tạm khóa tiền (escrow_hold)
                 WalletTransaction clientHold = WalletTransaction.builder()
                         .user(client)
                         .amount(-price)
@@ -749,7 +749,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build();
                 allTransactions.add(clientHold);
 
-                // Client release
+                // Giải ngân tiền cọc của khách
                 WalletTransaction clientRelease = WalletTransaction.builder()
                         .user(client)
                         .amount(price)
@@ -759,7 +759,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build();
                 allTransactions.add(clientRelease);
 
-                // Artist receive
+                // Họa sĩ nhận tiền
                 WalletTransaction artistReceive = WalletTransaction.builder()
                         .user(artist)
                         .amount(price)
@@ -790,7 +790,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         walletTransactionRepository.saveAll(allTransactions);
 
-        // --- 8. GENERATE MESSAGES (Chat History) ---
+        // --- 8. TẠO TIN NHẮN (Lịch sử chat) ---
         List<Message> allMessages = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             User sender = allUsers.get(random.nextInt(allUsers.size()));
@@ -812,10 +812,10 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         messageRepository.saveAll(allMessages);
 
-        // --- 9. GENERATE NOTIFICATIONS ---
+        // --- 9. TẠO CÁC THÔNG BÁO ---
         List<Notification> allNotifications = new ArrayList<>();
 
-        // Notifications for Follows
+        // Thông báo cho lượt theo dõi
         for (int i = 0; i < Math.min(20, allFollows.size()); i++) {
             Follow f = allFollows.get(i);
             Notification notification = Notification.builder()
@@ -828,7 +828,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             allNotifications.add(notification);
         }
 
-        // Notifications for Likes
+        // Thông báo cho lượt thích
         for (int i = 0; i < Math.min(20, allLikes.size()); i++) {
             Like l = allLikes.get(i);
             Notification notification = Notification.builder()
@@ -843,7 +843,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             allNotifications.add(notification);
         }
 
-        // Notifications for Commissions
+        // Thông báo cho commission
         for (int i = 0; i < Math.min(10, allCommissions.size()); i++) {
             Commission c = allCommissions.get(i);
             Notification notification = Notification.builder()
@@ -859,14 +859,14 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         notificationRepository.saveAll(allNotifications);
 
-        // --- 10. RECALCULATE & UPDATE USERS STATISTICS ---
+        // --- 10. TÍNH TOÁN LẠI & CẬP NHẬT THỐNG KÊ CỦA NGƯỜI DÙNG ---
         for (User user : allUsers) {
             int totalViews = 0;
             int totalLikes = 0;
             int totalBookmarks = 0;
             int totalComments = 0;
 
-            // Get illustrations by this user
+            // Lấy các tác phẩm của người dùng này
             List<Illustration> userIllustrations = illustrationRepository.findByArtistIdOrderByCreatedAtDesc(user.getId());
             for (Illustration ill : userIllustrations) {
                 totalViews += ill.getViewsCount();
@@ -930,7 +930,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 return uploadedUrl;
             }
         }
-        return url; // Fallback to original URL if download or upload fails
+        return url; // Trả về URL gốc nếu quá trình tải hoặc upload thất bại
     }
 
     private String getAvatarUrl(int index) {

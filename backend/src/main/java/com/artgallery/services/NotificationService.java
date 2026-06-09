@@ -44,8 +44,8 @@ public class NotificationService {
 
         notification = notificationRepository.save(notification);
 
-        // Broadcast to recipient via WebSocket
-        // Using Recipient ID string as the WebSocket principal name
+        // Phát sóng (broadcast) thông báo tới người nhận qua WebSocket
+        // Sử dụng chuỗi ID người nhận làm tên principal cho kết nối WebSocket
         try {
             messagingTemplate.convertAndSendToUser(
                     recipientId.toString(),

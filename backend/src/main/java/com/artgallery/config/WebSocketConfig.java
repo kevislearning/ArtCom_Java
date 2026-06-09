@@ -91,7 +91,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String jwt = null;
                     
-                    // 1. Try to read from native headers
+                    // 1. Thử đọc từ native headers
                     List<String> authHeaders = accessor.getNativeHeader("Authorization");
                     if (authHeaders != null && !authHeaders.isEmpty()) {
                         String bearer = authHeaders.get(0);
@@ -100,7 +100,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         }
                     }
 
-                    // 2. Try to read from query params mapped to Session Attributes by HandshakeInterceptor
+                    // 2. Thử đọc từ query params được ánh xạ sang Session Attributes bởi HandshakeInterceptor
                     if (!StringUtils.hasText(jwt) && accessor.getSessionAttributes() != null) {
                         Object tokenAttr = accessor.getSessionAttributes().get("token");
                         if (tokenAttr != null) {
@@ -108,7 +108,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         }
                     }
 
-                    // 3. Try to read from custom native header passcode
+                    // 3. Thử đọc từ custom native header passcode
                     if (!StringUtils.hasText(jwt)) {
                         List<String> tokenHeaders = accessor.getNativeHeader("token");
                         if (tokenHeaders != null && !tokenHeaders.isEmpty()) {

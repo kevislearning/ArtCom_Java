@@ -11,7 +11,7 @@ import java.nio.file.Files;
 public class ArtGalleryApplication {
 
     public static void main(String[] args) {
-        // Load .env file programmatically
+        // Tải file .env vào thuộc tính hệ thống một cách lập trình
         try {
             File envFile = new File(".env");
             if (!envFile.exists()) {
@@ -25,7 +25,7 @@ public class ArtGalleryApplication {
                         int eqIdx = line.indexOf('=');
                         String key = line.substring(0, eqIdx).trim();
                         String val = line.substring(eqIdx + 1).trim();
-                        // Strip quotes if present
+                        // Loại bỏ dấu nháy kép hoặc nháy đơn nếu có
                         if (val.startsWith("\"") && val.endsWith("\"")) {
                             val = val.substring(1, val.length() - 1);
                         } else if (val.startsWith("'") && val.endsWith("'")) {

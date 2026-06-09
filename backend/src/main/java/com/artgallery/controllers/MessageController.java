@@ -63,7 +63,7 @@ public class MessageController {
 
         message = messageRepository.save(message);
 
-        // Broadcast to receiver via Spring STOMP WebSocket user queue
+        // Phát sóng tới người nhận qua hàng đợi người dùng (user queue) Spring STOMP WebSocket
         try {
             messagingTemplate.convertAndSendToUser(
                     receiverId.toString(),
@@ -90,10 +90,10 @@ public class MessageController {
 
         UUID userId = authUser.getId();
 
-        // Fetch messages between these two users
+        // Lấy lịch sử tin nhắn giữa hai người dùng này
         List<Message> messages = messageRepository.findChatHistory(userId, otherUserId);
 
-        // Mark incoming messages as read
+        // Đánh dấu các tin nhắn gửi đến là đã đọc
         messageRepository.markAsRead(otherUserId, userId);
 
         return ResponseEntity.ok(messages);
@@ -119,7 +119,7 @@ public class MessageController {
 
         UUID userId = authUser.getId();
 
-        // Get messages sorted by createdAt DESC
+        // Lấy danh sách tin nhắn được sắp xếp giảm dần theo thời gian tạo (createdAt DESC)
         List<Message> messages = messageRepository.findConversationsForUser(userId);
 
         Map<UUID, ConversationItem> conversationMap = new LinkedHashMap<>();
